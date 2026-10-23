@@ -31,7 +31,7 @@ disk = cv2.DISK.create("disk.onnx")
 index = cv2.ANNIndex.create(descriptor_dimension)
 ```
 
-Only the class signatures above were introspected in the native wrapper. Model inference was tested explicitly through DNN, below. Native end-to-end matching and DISK model inference are not claimed as verified. LightGlue's native wrapper lacks an explicit engine parameter in this wheel; the production adapter will use `cv2.dnn` with `ENGINE_NEW` to make engine selection auditable.
+Only the class signatures above were introspected in the native wrapper. Model inference was tested explicitly through DNN, below. Native end-to-end matching and DISK model inference are not claimed as verified. The inspected native ALIKED implementation ignores the mask argument shown in the example, so that call cannot enforce static-background selection. The implemented stabilization adapter explicitly filters keypoints outside a whole-structure box. It also uses DNN directly because LightGlue's native wrapper lacks an explicit engine parameter in this wheel.
 
 ```python
 net = cv2.dnn.readNetFromONNX(model_path, cv2.dnn.ENGINE_NEW)
@@ -46,7 +46,7 @@ The committed probe executed forward passes for ALIKED, ALIKED LightGlue and Ope
 - ALIKED/LightGlue exports were selected from the [official OpenCV extra test manifest](https://github.com/opencv/opencv_extra/blob/5.x/testdata/dnn/download_models.py). Downloaded files match that manifest's SHA-1 values; their SHA-256 and byte counts are in `eval/results/model_downloads.json`.
 - [ALIKED upstream](https://github.com/Shiaoming/ALIKED/blob/main/LICENSE) is BSD-3-Clause; [LightGlue upstream](https://github.com/cvg/LightGlue/blob/main/LICENSE) is Apache-2.0. The export repository's root LICENSE URL returned not found. The ONNX export redistribution license therefore remains unresolved; do not bundle these weights in the public repo or cloud image until that is resolved. Local compatibility experiments are kept separate from redistribution.
 - [OpenCV Zoo YOLOX](https://github.com/opencv/opencv_zoo/tree/main/models/object_detection_yolox) provides a ready ONNX export under Apache-2.0. Reuse it rather than introducing a PyTorch export dependency. Its forward pass works in `ENGINE_NEW`; a real vehicle detection sample is still required in P2.
-- No PyTorch or ONNX Runtime inference was installed or used by this project.
+- No PyTorch or ONNX Runtime API was used for inference. Every tested model explicitly selects ENGINE_NEW.
 
 License notices are retained under `docs/model-licenses/`. Weights are ignored by Git.
 
@@ -67,6 +67,6 @@ The [sample-linked export inventory](https://huggingface.co/nklskyoy/paligemma2-
 
 ## Open boundaries
 
-COOL execution requires a subscribed AWS AMI and real instance access. `scripts/verify_cool.py` rejects this local wheel. End-to-end background matching, vehicle detection on a real clip, and export redistribution rights are pending P2 gates. These do not block the pure numerical P1 slice.
+COOL execution requires a subscribed AWS AMI and real instance access. `scripts/verify_cool.py` rejects this local wheel. Background matching and shake cancellation now execute on a synthetic scene in `eval/stabilization.py`. Vehicle detection on a real clip, real handheld validation, and export redistribution rights remain pending P2 gates. These do not block the pure numerical P1 slice.
 
 Signal processing follows the pinned [SciPy Welch API](https://docs.scipy.org/doc/scipy-1.15.3/reference/generated/scipy.signal.welch.html). No upstream model accuracy or bridge statistics are reused as project evaluation results.

@@ -3,19 +3,29 @@
 import hashlib
 from collections.abc import Mapping, Sequence
 
+import cv2
 import numpy as np
 from numpy.typing import NDArray
 
 from resonance.config import MeasurementConfig, Settings
 from resonance.errors import EvidenceError
 from resonance.io.video import probe_video, read_roi_frames
+from resonance.modal.fdd import decompose
 from resonance.modal.spectrum import estimate_spectrum
 from resonance.modal.uncertainty import bootstrap_frequency_ci
-from resonance.models import Capture, DisplacementSeries, FrequencyBand, ModalEstimate, Spectrum
+from resonance.models import (
+    Capture,
+    DisplacementSeries,
+    FrequencyBand,
+    ModalEstimate,
+    RoiEstimate,
+    Spectrum,
+)
 from resonance.motion.phase_corr import extract_phase_correlation
 from resonance.motion.riesz import extract_riesz
 from resonance.quality.scene import assess_scene, check_sampling
 from resonance.runtime import provenance
+from resonance.stabilize.ego_motion import EgoMotion
 
 
 def measure_frames(
@@ -72,7 +82,25 @@ def measure_frames(
                     reasons.append(f"{roi_id}/{extractor.__name__}: {exc}")
         if not candidates:
             raise EvidenceError("No ROI and extraction method produced a resolvable mode")
+        roi_estimates: list[RoiEstimate] = []
+        for roi_id in frames_by_roi:
+            roi_candidates = [item for item in candidates if item[0].roi_id == roi_id]
+            if roi_candidates:
+                series, roi_spectrum = max(
+                    roi_candidates, key=lambda candidate: candidate[1].snr_db
+                )
+                roi_estimates.append(RoiEstimate(series=series, spectrum=roi_spectrum))
         selected, spectrum = max(candidates, key=lambda candidate: candidate[1].snr_db)
+        fdd = None
+        if len(roi_estimates) >= 2:
+            try:
+                fdd = decompose(
+                    [item.series for item in roi_estimates],
+                    band,
+                    window_seconds=config.welch_seconds,
+                )
+            except EvidenceError as exc:
+                reasons.append(f"Mode shape unavailable: {exc}")
         ci = bootstrap_frequency_ci(
             np.asarray(selected.displacement_px),
             fps,
@@ -97,6 +125,8 @@ def measure_frames(
             candidates=[entry[1] for entry in candidates],
             provenance=runtime,
             config_sha256=config_sha,
+            roi_estimates=roi_estimates,
+            fdd=fdd,
         )
     except EvidenceError as exc:
         return ModalEstimate(
@@ -113,11 +143,35 @@ def measure(
     capture: Capture, config: MeasurementConfig | None = None, settings: Settings | None = None
 ) -> ModalEstimate:
     config = config or MeasurementConfig()
+    settings = settings or Settings()
+    stabilizer: EgoMotion | None = None
+    model_hashes: dict[str, str] = {}
     try:
         metadata = probe_video(capture, config)
         check_sampling(metadata.acquisition_fps, capture.band)
-        frames = read_roi_frames(capture.path, capture.rois, metadata, config)
-    except (EvidenceError, FileNotFoundError) as exc:
+        if capture.stabilize:
+            box = capture.structure_box
+            if (
+                box is None
+                or box.x + box.width > metadata.width
+                or box.y + box.height > metadata.height
+            ):
+                raise EvidenceError("Select a valid box covering the entire moving structure")
+            if settings.aliked_model is None or settings.lightglue_model is None:
+                raise EvidenceError(
+                    "Stabilization models are missing; configure ALIKED and LightGlue weights"
+                )
+            stabilizer = EgoMotion(settings.aliked_model, settings.lightglue_model, [box])
+            for model_path in (settings.aliked_model, settings.lightglue_model):
+                model_hashes[model_path.name] = hashlib.sha256(model_path.read_bytes()).hexdigest()
+        frames = read_roi_frames(
+            capture.path,
+            capture.rois,
+            metadata,
+            config,
+            frame_transform=stabilizer.apply if stabilizer else None,
+        )
+    except (EvidenceError, FileNotFoundError, cv2.error) as exc:
         return ModalEstimate(
             capture_id=capture.id,
             bridge_id=capture.bridge_id,
@@ -138,4 +192,6 @@ def measure(
     )
     with capture.path.open("rb") as stream:
         result.input_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
+    result.stabilization_applied = stabilizer is not None
+    result.model_sha256 = model_hashes
     return result

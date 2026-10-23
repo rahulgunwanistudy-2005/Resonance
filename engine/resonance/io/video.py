@@ -3,6 +3,7 @@
 import json
 import shutil
 import subprocess
+from collections.abc import Callable
 from fractions import Fraction
 from pathlib import Path
 
@@ -100,6 +101,7 @@ def read_roi_frames(
     rois: list[Roi],
     metadata: VideoMetadata,
     config: MeasurementConfig,
+    frame_transform: Callable[[NDArray[np.uint8]], NDArray[np.uint8]] | None = None,
 ) -> dict[str, list[NDArray[np.uint8]]]:
     if len(rois) > config.max_rois or len({roi.id for roi in rois}) != len(rois):
         raise EvidenceError("Use a bounded number of ROIs with distinct identifiers")
@@ -122,10 +124,12 @@ def read_roi_frames(
                 raise EvidenceError("Video ended before the timestamped frame count")
             if frame.shape[:2] != (metadata.height, metadata.width):
                 raise EvidenceError("Video dimensions change during capture")
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if frame_transform is not None:
+                frame = frame_transform(np.asarray(frame, dtype=np.uint8))
             for roi in rois:
-                crop = gray[roi.y : roi.y + roi.height, roi.x : roi.x + roi.width]
-                frames[roi.id].append(np.asarray(crop, dtype=np.uint8).copy())
+                crop = frame[roi.y : roi.y + roi.height, roi.x : roi.x + roi.width]
+                gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+                frames[roi.id].append(np.asarray(gray, dtype=np.uint8).copy())
     finally:
         reader.release()
     return frames

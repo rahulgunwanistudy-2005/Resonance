@@ -1,6 +1,6 @@
 PYTHON := .venv/bin/python
 
-.PHONY: setup check test eval probe models verify-cool
+.PHONY: setup check test eval eval-stabilization report-preview probe models verify-cool
 setup:
 	UV_PROJECT_ENVIRONMENT=../.venv uv sync --project engine --extra local --frozen
 
@@ -17,6 +17,12 @@ test:
 eval:
 	$(PYTHON) -m eval.synthetic
 	$(PYTHON) -m eval.failure_cases
+
+eval-stabilization:
+	$(PYTHON) -m eval.stabilization
+
+report-preview:
+	$(PYTHON) scripts/render_metrics.py docs/evaluation.md --output outputs/evaluation.md
 
 probe:
 	$(PYTHON) scripts/probe_opencv.py

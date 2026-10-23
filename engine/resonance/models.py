@@ -57,6 +57,14 @@ class Capture(Contract):
     temperature_c: float | None = None
     acquisition_fps: float | None = Field(default=None, gt=0)
     acquisition_fps_verified: bool = False
+    stabilize: bool = False
+    structure_box: Roi | None = None
+
+    @model_validator(mode="after")
+    def require_structure_mask(self) -> Self:
+        if self.stabilize and self.structure_box is None:
+            raise ValueError("Stabilization requires a box covering the entire moving structure")
+        return self
 
 
 class VideoMetadata(Contract):
@@ -110,6 +118,20 @@ class RuntimeProvenance(Contract):
     cool_verified: bool = False
 
 
+class RoiEstimate(Contract):
+    series: DisplacementSeries
+    spectrum: Spectrum
+
+
+class FddSpectrum(Contract):
+    roi_ids: list[str]
+    frequency_hz: list[float]
+    principal_psd: list[float]
+    peak_bin_hz: float
+    mode_shape_real: list[float]
+    mode_shape_imag: list[float]
+
+
 class ModalEstimate(Contract):
     capture_id: str
     bridge_id: str
@@ -122,6 +144,10 @@ class ModalEstimate(Contract):
     provenance: RuntimeProvenance
     input_sha256: str | None = None
     config_sha256: str
+    stabilization_applied: bool = False
+    model_sha256: dict[str, str] = Field(default_factory=dict)
+    roi_estimates: list[RoiEstimate] = Field(default_factory=list)
+    fdd: FddSpectrum | None = None
 
 
 class Baseline(Contract):

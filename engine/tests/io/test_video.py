@@ -66,3 +66,12 @@ def test_missing_file_is_an_evidence_failure(tmp_path: Path) -> None:
         rois=[Roi(id="deck", x=0, y=0, width=64, height=64)],
     )
     assert measure(capture).outcome == "INSUFFICIENT_EVIDENCE"
+
+
+def test_requested_stabilization_never_silently_falls_back(capture: Capture) -> None:
+    capture.stabilize = True
+    capture.structure_box = Roi(id="entire-structure", x=0, y=0, width=96, height=96)
+    result = measure(capture)
+    assert result.outcome == "INSUFFICIENT_EVIDENCE"
+    assert not result.stabilization_applied
+    assert any("models are missing" in reason for reason in result.reasons)

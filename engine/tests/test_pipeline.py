@@ -42,3 +42,19 @@ def test_bad_scene_and_aliasing_are_first_class_outcomes() -> None:
         assert result.outcome == "INSUFFICIENT_EVIDENCE"
         assert result.reasons
         assert result.spectrum is None
+
+
+def test_multiple_rois_record_selected_methods_and_mode_shape() -> None:
+    frames, _ = generate(SyntheticConfig(roi_size=64, duration_seconds=4, amplitude_rms_px=0.5))
+    result = measure_frames(
+        {"left": frames, "right": frames},
+        fps=60,
+        band=FrequencyBand(low_hz=1, high_hz=15),
+        capture_id="two-rois",
+        bridge_id="desk",
+        config=MeasurementConfig(bootstrap_repeats=20),
+    )
+    assert result.outcome == "MEASURED"
+    assert len(result.roi_estimates) == 2
+    assert result.fdd is not None
+    np.testing.assert_allclose(result.fdd.mode_shape_real, [1, 1], atol=1e-6)

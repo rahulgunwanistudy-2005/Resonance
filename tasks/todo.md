@@ -15,6 +15,12 @@ Goal: a reproducible OpenCV 5 measurement service with measured evidence, an exp
 - [x] P0 / Friday night / budget 2h: install requested OpenCV pin in isolated uv environment; inspect ALIKED, DISK, LightGlue, ANNIndex and DNN ENGINE_NEW; verify model requirements/licensing; inspect official VLM sample; load vehicle detector if compatible. Gate: `docs/api-findings.md` with executed snippets and honest blockers.
 - [x] P1 / Friday night–Saturday / 6h: video I/O, quality, phase correlation, Riesz, spectra, bootstrap, physics prior, synthetic generation. Gate: actual `eval/results/synthetic.json`, mirrored tests, strict typing and lint.
 - [ ] P2 / Saturday / 5h: background stabilization, scale calibration, excitation detection. Gate: measured shake benefit and sample vehicle trigger.
+  - [x] ALIKED + LightGlue with explicit ENGINE_NEW, entire-structure exclusion, MAGSAC and LK between refreshes.
+  - [x] Integrate optional stabilization into file measurement; missing models/refused transforms never silently fall back.
+  - [x] Record synthetic camera-shake comparison and runtime/model provenance.
+  - [x] Per-ROI method selection and multi-ROI FDD mode shape; two-point scale conversion.
+  - [x] YOLOX preprocessing/inference/decoding and debounced vehicle-exit or explicit motion-energy fallback.
+  - [ ] Real vehicle clip and handheld validation; profile/parallel ROI work and feature-refresh tradeoff measurement.
 - [ ] P3 / Saturday after recordings arrive by 14:00 IST / 4h: desk vs accelerometer evaluation, damage-state comparison, healthy/damaged magnification and audification, true-fps checks. Gate: `eval/results/desk.json` from supplied recordings.
 - [ ] P4 / Saturday / 5h: deterministic agent, baseline, optional guarded Bedrock planner; evaluate ADAPT, RETRY, WATCH and approval, including insufficient evidence. Gate: replay trace and `eval/results/agent.json` across at least 20 captures.
 - [ ] P5 / Saturday–Sunday / 5h: FastAPI, upload limits, request IDs, SQS worker, S3/Dynamo storage, WebSocket updates and MCP stdio. Gate: complete upload-to-results path plus protected approval.
@@ -85,3 +91,8 @@ Goal: a reproducible OpenCV 5 measurement service with measured evidence, an exp
 - P1 verified: `make check` → ruff and format passed, strict mypy clean (engine including tests and API scaffold), 38 tests passed, metric source guard passed. Encoded video end-to-end test exercises the real ffprobe/decode/measurement path. `make eval` → 48 synthetic method/input experiments, 36 eligible; frequency target 36/36, amplitude target 6/36. Failure evaluation → 6/6 correct refusals. These are synthetic results, not desk/field evidence.
 - P1 self-review: checked malformed/non-finite input, shape/timing mismatch, ROI bounds, upload/memory limits, module layering, configuration access, lack of alternate inference engines and honest result labeling. Runtime provenance and source/input hashes recorded.
 - P1 deferred: amplitude bias correction and real-data interval coverage, multiprocessing/profile comparison, FDD mode shapes, stabilization and all service/cloud/UI phases. No claim that amplitude targets are met.
+- P2 progress: synthetic shake cancellation shows benefit in `eval/results/stabilization.json`; learned models actually execute through ENGINE_NEW. The real-clip detector gate remains open, so P2 is not marked complete. Multi-ROI selection/FDD and scale are now implemented. Optional model tests run locally; CI skips those tests if model assets are absent.
+- Human inputs requested during implementation: desk video/accelerometer folder and confirmed acquisition fps; AWS profile/region and subscribed COOL AMI. No secret keys requested. No real-data or cloud results have been invented.
+
+- P2 checkpoint verification: `make check` → 50 local tests passed, strict mypy clean, ruff/format and metric source guard passed. `make eval-stabilization` → benefit observed; actual before/after errors are in generated JSON, with matching source/model hashes. `make report-preview` generated `outputs/evaluation.md` from JSON references. Real vehicle/handheld gates remain pending.
+- Local CLI smoke: generated an encoded synthetic fixture and ran `scripts/measure.py` → MEASURED, with runtime/input provenance and no COOL claim.
