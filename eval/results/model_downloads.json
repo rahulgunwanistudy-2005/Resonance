@@ -1,0 +1,20 @@
+{
+  "aliked-n16rot-top1k-640.onnx": {
+    "url": "https://raw.githubusercontent.com/YangGuanyuhan/lightglue_opencv_project/main/model/aliked-n16rot-top1k-640.onnx",
+    "bytes": 6438045,
+    "sha256": "b46868de0794ea0f2d878985d99dc17d3639dfab85d852994254a4cdf0cdc0ea",
+    "verified_opencv_extra_sha1": "41faa7bf5d7eb68a2851471ba03aa20c9db30e4c"
+  },
+  "aliked_lightglue.onnx": {
+    "url": "https://raw.githubusercontent.com/YangGuanyuhan/lightglue_opencv_project/main/model/aliked_lightglue.onnx",
+    "bytes": 45837864,
+    "sha256": "a1bd99d294c4c6c08ca978af3128c85f8c0e603b04a03e4391428455d9624439",
+    "verified_opencv_extra_sha1": "02723aa521990e57fe33d90b67977590c460e351"
+  },
+  "object_detection_yolox_2022nov.onnx": {
+    "url": "https://media.githubusercontent.com/media/opencv/opencv_zoo/main/models/object_detection_yolox/object_detection_yolox_2022nov.onnx",
+    "bytes": 35858002,
+    "sha256": "c5c2d13e59ae883e6af3b45daea64af4833a4951c92d116ec270d9ddbe998063",
+    "verified_opencv_extra_sha1": null
+  }
+}

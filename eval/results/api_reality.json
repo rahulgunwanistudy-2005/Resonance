@@ -1,0 +1,97 @@
+{
+  "provenance": {
+    "cv2_version": "5.0.0",
+    "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",
+    "build_info_sha": "ca056069608fa981f74a01de3ba432a4d0395d8eb8de2bcbbc279f3cc02ce46d",
+    "machine": "arm64",
+    "instance_type": null,
+    "ami_id": null,
+    "cool_verified": false
+  },
+  "seed": 42,
+  "apis": {
+    "ALIKED": {
+      "create": "create(modelPath[, params]) -> retval\n.   @brief Creates ALIKED from a model file path.\n.       @param modelPath Path to the ONNX model file.\n.       @param params ALIKED parameters."
+    },
+    "DISK": {
+      "create": "create(modelPath[, maxKeypoints[, scoreThreshold[, imageSize[, backendId[, targetId]]]]]) -> retval\n.   @brief Creates a DISK detector.\n.       @param modelPath Path to the DISK ONNX model.\n.       @param maxKeypoints Maximum number of keypoints to return per image. The strongest\n.                           responses (by network score) are kept; -1 keeps all detections.\n.       @param scoreThreshold Discard keypoints with network score strictly below this value.\n.       @param imageSize Target input size (width, height) fed to the network. Use Size()\n.                        (the default) to fall back to the network's expected fixed input\n.                        shape of 1024x1024. When overriding, both dimensions must be\n.                        positive multiples of 16, since DISK downsamples by a factor of 16.\n.       @param backendId DNN backend identifier (see cv::dnn::Backend); 0 = DNN_BACKEND_DEFAULT.\n.       @param targetId  DNN target identifier (see cv::dnn::Target);  0 = DNN_TARGET_CPU."
+    },
+    "LightGlueMatcher": {
+      "create": "create(modelPath[, scoreThreshold[, backend[, target]]]) -> retval\n.   @brief Creates LightGlueMatcher from a model file path.\n.       @param modelPath Path to the ONNX model file.\n.       @param scoreThreshold Match confidence threshold.\n.       @param backend DNN backend\n.       @param target DNN target"
+    },
+    "ANNIndex": {
+      "create": "create(dim[, distType]) -> retval\n.   @brief Creates an instance of annoy index class with given parameters\n.        *\n.        *  @param dim The dimension of the feature vector.\n.        *  @param distType Metric to calculate the distance between two feature vectors, can be DIST_EUCLIDEAN,\n.           DIST_MANHATTAN, DIST_ANGULAR, DIST_HAMMING, or DIST_DOTPRODUCT."
+    }
+  },
+  "aliked_params": {
+    "engine": 2,
+    "input_size": [
+      640,
+      640
+    ],
+    "backend": 0,
+    "target": 0
+  },
+  "dnn_engine": "ENGINE_NEW",
+  "models": {
+    "object_detection_yolox_2022nov.onnx": {
+      "sha256": "c5c2d13e59ae883e6af3b45daea64af4833a4951c92d116ec270d9ddbe998063",
+      "load_seconds": 0.07809720899967942,
+      "outputs": [
+        "output"
+      ],
+      "forward_seconds": 0.23494720800044888,
+      "output_shapes": [
+        [
+          1,
+          8400,
+          85
+        ]
+      ],
+      "status": "forward_passed"
+    },
+    "aliked-n16rot-top1k-640.onnx": {
+      "sha256": "b46868de0794ea0f2d878985d99dc17d3639dfab85d852994254a4cdf0cdc0ea",
+      "load_seconds": 0.07924708399878,
+      "outputs": [
+        "keypoints",
+        "descriptors",
+        "scores"
+      ],
+      "forward_seconds": 1.296591874999649,
+      "output_shapes": [
+        [
+          1000,
+          2
+        ],
+        [
+          1000,
+          128
+        ],
+        [
+          1000
+        ]
+      ],
+      "status": "forward_passed"
+    },
+    "aliked_lightglue.onnx": {
+      "sha256": "a1bd99d294c4c6c08ca978af3128c85f8c0e603b04a03e4391428455d9624439",
+      "load_seconds": 0.8239780830008385,
+      "outputs": [
+        "matches0",
+        "mscores0"
+      ],
+      "forward_seconds": 0.09011883299899637,
+      "output_shapes": [
+        [
+          30,
+          2
+        ],
+        [
+          30
+        ]
+      ],
+      "status": "forward_passed"
+    }
+  }
+}

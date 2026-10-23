@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "resonance"
+version = "0.1.0"
+description = "Video vibration measurement for structural triage"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy==2.2.6", "scipy==1.15.3", "pydantic==2.12.3"]
+
+[project.optional-dependencies]
+local = ["opencv-python-headless==5.0.0.93"]
+
+[dependency-groups]
+dev = ["pytest==8.4.2", "hypothesis==6.142.4", "mypy==1.18.2", "ruff==0.14.2", "scipy-stubs==1.15.3.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["resonance"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["cv2", "cv2.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", ".."]

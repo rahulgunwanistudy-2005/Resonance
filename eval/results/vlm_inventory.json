@@ -1,0 +1,9 @@
+{
+  "source": "https://huggingface.co/api/models/nklskyoy/paligemma2-3b-pt-224-onnx/tree/main?recursive=true&expand=false",
+  "total_bytes": 14507764391,
+  "components": {
+    "siglip/onnx/": 1661096446,
+    "embedding/onnx/": 2370502908,
+    "gemma/onnx/": 10470216119
+  }
+}
