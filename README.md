@@ -4,7 +4,9 @@ Video-based vibration measurement for structural triage. Resonance does not repl
 
 ## Current build
 
-Local OpenCV runtime and model compatibility probes are implemented. Synthetic measurement development is in progress. No public endpoint, real bridge result, desk-rig validation, AWS deployment or COOL benchmark is claimed.
+Local OpenCV runtime/model probes and the numerical measurement slice are implemented: bounded file decoding, acquisition-timing checks, scene quality, phase correlation and Riesz extraction, spectra, uncertainty, beam priors and scale conversion. Synthetic frequency recovery meets the initial target; amplitude frequently misses its target. See [measured evaluation evidence and limitations](docs/evaluation.md).
+
+No public endpoint, real bridge result, desk-rig validation, AWS deployment or COOL benchmark is claimed. Camera stabilization and agent control are later phase work.
 
 The phase plan and human prerequisites are tracked in [tasks/todo.md](tasks/todo.md). Executed API findings and their limits are in [docs/api-findings.md](docs/api-findings.md).
 
@@ -18,6 +20,21 @@ UV_PROJECT_ENVIRONMENT=../.venv uv sync --project engine --extra local --frozen
 .venv/bin/python scripts/download_models.py
 .venv/bin/python scripts/probe_opencv.py
 ```
+
+Run the numerical quality gates and regenerate evidence:
+
+```sh
+make check
+make eval
+```
+
+Measure a local clip by saving a Capture contract as JSON and running:
+
+```sh
+.venv/bin/python scripts/measure.py capture.json --output outputs/measurement.json
+```
+
+The contract needs `id`, `bridge_id`, `path`, `band` (`low_hz`, `high_hz`), and `rois` (`id`, `x`, `y`, `width`, `height`). Supply `acquisition_fps` from confirmed camera acquisition settings and `acquisition_fps_verified: true` only when that timing is known. `calibration` is optional. Missing or weak evidence produces `INSUFFICIENT_EVIDENCE` and a corrective reason, with exit code `2` in the local CLI.
 
 Model downloads are optional for the numerical synthetic evaluation. Check [model license notes](docs/api-findings.md#model-selection-and-licensing) before redistribution.
 

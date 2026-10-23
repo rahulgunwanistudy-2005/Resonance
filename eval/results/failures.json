@@ -1,0 +1,90 @@
+{
+  "kind": "synthetic_failure_scenarios",
+  "git_revision": "1a545822408ee75e4dc4e812d058f87f30a3094b",
+  "source_tree_sha256": "80bea44e9c6fc9775736b1b7b707246942e5c0d0b3665c2a360597b3b445152e",
+  "provenance": {
+    "cv2_version": "5.0.0",
+    "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",
+    "build_info_sha": "ca056069608fa981f74a01de3ba432a4d0395d8eb8de2bcbbc279f3cc02ce46d",
+    "machine": "arm64",
+    "instance_type": null,
+    "ami_id": null,
+    "cool_verified": false
+  },
+  "scenarios": [
+    {
+      "scenario": "low_texture",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "refused_as_expected": true,
+      "reasons": [
+        "deck: Low texture: select a textured ROI or add a reference pattern on the desk rig",
+        "deck: Blur: lock focus and shorten exposure, then record again",
+        "No ROI and extraction method produced a resolvable mode"
+      ]
+    },
+    {
+      "scenario": "aliasing_risk",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "refused_as_expected": true,
+      "reasons": [
+        "Video is 24 fps; the selected band needs at least 37.5 fps. Record at a higher verified acquisition rate or revise the physics prior."
+      ]
+    },
+    {
+      "scenario": "night",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "refused_as_expected": true,
+      "reasons": [
+        "deck: Low texture: select a textured ROI or add a reference pattern on the desk rig",
+        "deck: Blur: lock focus and shorten exposure, then record again",
+        "deck: Clipped exposure: reduce glare or adjust lighting, then record again",
+        "No ROI and extraction method produced a resolvable mode"
+      ]
+    },
+    {
+      "scenario": "saturation",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "refused_as_expected": true,
+      "reasons": [
+        "deck: Low texture: select a textured ROI or add a reference pattern on the desk rig",
+        "deck: Blur: lock focus and shorten exposure, then record again",
+        "deck: Clipped exposure: reduce glare or adjust lighting, then record again",
+        "No ROI and extraction method produced a resolvable mode"
+      ]
+    },
+    {
+      "scenario": "occlusion",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "refused_as_expected": true,
+      "reasons": [
+        "deck: Low texture: select a textured ROI or add a reference pattern on the desk rig",
+        "deck: Blur: lock focus and shorten exposure, then record again",
+        "No ROI and extraction method produced a resolvable mode"
+      ]
+    },
+    {
+      "scenario": "blur",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "refused_as_expected": true,
+      "reasons": [
+        "deck: Blur: lock focus and shorten exposure, then record again",
+        "No ROI and extraction method produced a resolvable mode"
+      ]
+    }
+  ],
+  "summary": {
+    "scenarios": 6,
+    "correct_refusals": 6
+  },
+  "pending": [
+    "Real night footage",
+    "Handheld camera-shake cancellation in P2",
+    "Occlusion shorter than scene-quality sampling interval"
+  ]
+}
