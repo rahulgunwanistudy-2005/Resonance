@@ -14,6 +14,8 @@ def test_literal_performance_claim_is_rejected() -> None:
     assert check_text("Frequency error: 0.1%")
     assert check_text("We process 120 fps")
     assert not check_text("Use `fps=60` for this example")
+    assert not check_text("font: '12px Overpass'")
+    assert check_text("Measured displacement: 12px")
 
 
 def test_missing_reference_or_directory_escape_is_rejected(tmp_path: Path) -> None:

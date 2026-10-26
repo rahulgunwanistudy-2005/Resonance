@@ -11,9 +11,28 @@ dependencies = ["numpy==2.2.6", "scipy==1.15.3", "pydantic==2.12.3"]
 
 [project.optional-dependencies]
 local = ["opencv-python-headless==5.0.0.93"]
+service = [
+    "fastapi==0.119.1",
+    "uvicorn==0.38.0",
+    "python-multipart==0.0.20",
+    "httpx==0.28.1",
+    "mcp==1.19.0",
+    "websockets==15.0.1",
+]
+cloud = ["boto3==1.40.58", "aws-cdk-lib==2.221.0", "constructs==10.4.2"]
+report = ["reportlab==4.4.4", "matplotlib==3.10.7", "pypdf==6.1.1", "psutil==7.1.1"]
 
 [dependency-groups]
-dev = ["pytest==8.4.2", "hypothesis==6.142.4", "mypy==1.18.2", "ruff==0.14.2", "scipy-stubs==1.15.3.0"]
+dev = [
+    "pytest==8.4.2",
+    "hypothesis==6.142.4",
+    "mypy==1.18.2",
+    "ruff==0.14.2",
+    "scipy-stubs==1.15.3.0",
+    "playwright==1.56.0",
+    "boto3-stubs[s3,sqs,dynamodb,sns]==1.40.58",
+    "py-spy==0.4.1",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["resonance"]

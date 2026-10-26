@@ -1,0 +1,101 @@
+{
+  "kind": "measured_local_cprofile",
+  "py_spy_status": "Requires root on macOS; no elevated operating-system access was attempted",
+  "profiled_run": "python -m cProfile -o outputs/profiles/serial.pstats -m bench.roi_pool --profile-workers 1",
+  "total_seconds": 38.605801689000074,
+  "functions": [
+    {
+      "function": "resonance/pipeline.py:31:measure_frames",
+      "calls": 6,
+      "own_seconds": 0.00171049,
+      "cumulative_seconds": 36.39562096
+    },
+    {
+      "function": "resonance/motion/extract.py:32:extract",
+      "calls": 24,
+      "own_seconds": 0.002151459,
+      "cumulative_seconds": 35.450340375
+    },
+    {
+      "function": "resonance/motion/riesz.py:26:extract_riesz",
+      "calls": 24,
+      "own_seconds": 1.7708461190000002,
+      "cumulative_seconds": 28.625094915000002
+    },
+    {
+      "function": "resonance/motion/riesz.py:14:_quadrature",
+      "calls": 23088,
+      "own_seconds": 5.262495316000001,
+      "cumulative_seconds": 15.418214378000002
+    },
+    {
+      "function": "resonance/motion/phase_corr.py:12:extract_phase_correlation",
+      "calls": 24,
+      "own_seconds": 0.09156027300000001,
+      "cumulative_seconds": 6.734372499
+    },
+    {
+      "function": "resonance/modal/spectrum.py:10:estimate_spectrum",
+      "calls": 1254,
+      "own_seconds": 0.10190655900000001,
+      "cumulative_seconds": 0.8860099770000001
+    },
+    {
+      "function": "resonance/modal/uncertainty.py:9:bootstrap_frequency_ci",
+      "calls": 6,
+      "own_seconds": 0.030819503,
+      "cumulative_seconds": 0.843861873
+    },
+    {
+      "function": "resonance/quality/scene.py:19:gray_float",
+      "calls": 23256,
+      "own_seconds": 0.457521283,
+      "cumulative_seconds": 0.633142415
+    },
+    {
+      "function": "resonance/modal/spectrum.py:1:<module>",
+      "calls": 1,
+      "own_seconds": 2.9542000000000003e-05,
+      "cumulative_seconds": 0.199643917
+    },
+    {
+      "function": "resonance/models.py:1:<module>",
+      "calls": 1,
+      "own_seconds": 4.6082000000000004e-05,
+      "cumulative_seconds": 0.09769337500000001
+    },
+    {
+      "function": "resonance/quality/scene.py:31:assess_scene",
+      "calls": 192,
+      "own_seconds": 0.008820372,
+      "cumulative_seconds": 0.054775847
+    },
+    {
+      "function": "resonance/modal/fdd.py:12:decompose",
+      "calls": 6,
+      "own_seconds": 0.001123387,
+      "cumulative_seconds": 0.034821875
+    },
+    {
+      "function": "resonance/quality/scene.py:1:<module>",
+      "calls": 1,
+      "own_seconds": 6.033300000000001e-05,
+      "cumulative_seconds": 0.016102375000000002
+    },
+    {
+      "function": "resonance/pipeline.py:1:<module>",
+      "calls": 1,
+      "own_seconds": 4.4707000000000004e-05,
+      "cumulative_seconds": 0.013743083000000001
+    },
+    {
+      "function": "resonance/config.py:1:<module>",
+      "calls": 1,
+      "own_seconds": 1.3041000000000001e-05,
+      "cumulative_seconds": 0.013005417
+    }
+  ],
+  "limitations": [
+    "Profiler overhead is included; these values are not production latency or a py-spy measurement"
+  ]
+}

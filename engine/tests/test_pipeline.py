@@ -58,3 +58,28 @@ def test_multiple_rois_record_selected_methods_and_mode_shape() -> None:
     assert len(result.roi_estimates) == 2
     assert result.fdd is not None
     np.testing.assert_allclose(result.fdd.mode_shape_real, [1, 1], atol=1e-6)
+
+
+def test_spawned_roi_pool_preserves_numerical_results() -> None:
+    frames, _ = generate(SyntheticConfig(roi_size=64, duration_seconds=4, amplitude_rms_px=0.5))
+    inputs = {"left": frames, "right": frames}
+    serial = measure_frames(
+        inputs,
+        fps=60,
+        band=FrequencyBand(low_hz=1, high_hz=15),
+        capture_id="pool",
+        bridge_id="beam",
+        config=MeasurementConfig(bootstrap_repeats=20),
+    )
+    parallel = measure_frames(
+        inputs,
+        fps=60,
+        band=FrequencyBand(low_hz=1, high_hz=15),
+        capture_id="pool",
+        bridge_id="beam",
+        config=MeasurementConfig(bootstrap_repeats=20, roi_workers=2),
+    )
+    assert parallel.outcome == serial.outcome == "MEASURED"
+    assert parallel.selected == serial.selected
+    assert parallel.spectrum == serial.spectrum
+    assert parallel.ci_hz == serial.ci_hz

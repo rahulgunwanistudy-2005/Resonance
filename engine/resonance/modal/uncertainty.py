@@ -14,6 +14,7 @@ def bootstrap_frequency_ci(
     repeats: int = 200,
     block_seconds: float = 2.0,
     seed: int = 42,
+    window_seconds: float = 4.0,
 ) -> tuple[float, float]:
     """Moving-block residual bootstrap conditional on a fitted single stationary mode.
 
@@ -22,7 +23,7 @@ def bootstrap_frequency_ci(
     """
     if repeats < 20 or block_seconds <= 0 or fps <= 0:
         raise EvidenceError("Bootstrap needs positive timing and at least twenty repeats")
-    window_seconds = min(4.0, len(values) / fps)
+    window_seconds = min(window_seconds, len(values) / fps)
     estimate = estimate_spectrum(values, fps, band, window_seconds=window_seconds)
     time = np.arange(len(values)) / fps
     basis = np.column_stack(

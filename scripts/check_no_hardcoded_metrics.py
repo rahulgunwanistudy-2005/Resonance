@@ -48,6 +48,9 @@ def check_text(text: str, root: Path = ROOT) -> list[str]:
     prose = re.sub(r"```[\s\S]*?```", "", text)
     prose = re.sub(r"`[^`]*`", "", prose)
     prose = TOKEN.sub("<measured value>", prose)
+    prose = re.sub(
+        r"(?:font|labelFont)\s*:\s*['\"]\d+(?:\.\d+)?px [^'\"]+['\"]", "", prose
+    )
     for match in LITERAL.finditer(prose):
         failures.append(f"Literal measured claim: {match[0]}; use a metric reference")
     return failures

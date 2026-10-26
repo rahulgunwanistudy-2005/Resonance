@@ -59,6 +59,9 @@ class Capture(Contract):
     acquisition_fps_verified: bool = False
     stabilize: bool = False
     structure_box: Roi | None = None
+    trigger_source: Literal["operator_upload", "heavy_vehicle_exit", "motion_energy"] = (
+        "operator_upload"
+    )
 
     @model_validator(mode="after")
     def require_structure_mask(self) -> Self:
@@ -157,6 +160,9 @@ class Baseline(Contract):
     alpha_per_c: float
     residual_std_hz: float = Field(ge=0)
     capture_ids: list[str] = Field(min_length=3)
+    temperature_min_c: float = -100
+    temperature_max_c: float = 100
+    regression_inverse: list[list[float]] = Field(default_factory=list)
 
 
 class DecisionStatus(StrEnum):

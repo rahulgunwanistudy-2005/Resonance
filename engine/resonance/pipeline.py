@@ -1,7 +1,9 @@
 """Pure numerical measurement boundary; no web framework, cloud client or environment reads."""
 
 import hashlib
+import multiprocessing
 from collections.abc import Mapping, Sequence
+from concurrent.futures import ProcessPoolExecutor
 
 import cv2
 import numpy as np
@@ -11,7 +13,6 @@ from resonance.config import MeasurementConfig, Settings
 from resonance.errors import EvidenceError
 from resonance.io.video import probe_video, read_roi_frames
 from resonance.modal.fdd import decompose
-from resonance.modal.spectrum import estimate_spectrum
 from resonance.modal.uncertainty import bootstrap_frequency_ci
 from resonance.models import (
     Capture,
@@ -21,8 +22,7 @@ from resonance.models import (
     RoiEstimate,
     Spectrum,
 )
-from resonance.motion.phase_corr import extract_phase_correlation
-from resonance.motion.riesz import extract_riesz
+from resonance.motion.extract import RoiWork, extract, initialize_worker
 from resonance.quality.scene import assess_scene, check_sampling
 from resonance.runtime import provenance
 from resonance.stabilize.ego_motion import EgoMotion
@@ -46,6 +46,17 @@ def measure_frames(
     reasons: list[str] = []
     try:
         check_sampling(fps, band)
+        if config.analysis_seconds is not None:
+            if (
+                frames_by_roi
+                and config.analysis_seconds
+                > min(len(frames) for frames in frames_by_roi.values()) / fps + 1e-9
+            ):
+                raise EvidenceError("Requested window exceeds the capture; record a longer clip")
+            frames_by_roi = {
+                key: frames[: round(config.analysis_seconds * fps)]
+                for key, frames in frames_by_roi.items()
+            }
         if not frames_by_roi or len(frames_by_roi) > config.max_rois:
             raise EvidenceError("Select at least one ROI within the configured limit")
         lengths = {len(frames) for frames in frames_by_roi.values()}
@@ -55,6 +66,7 @@ def measure_frames(
             raise EvidenceError("Capture exceeds the configured duration limit")
         if mm_per_pixel is not None and (not np.isfinite(mm_per_pixel) or mm_per_pixel <= 0):
             raise EvidenceError("Calibration scale must be finite and positive")
+        work: list[RoiWork] = []
         for roi_id, frames in frames_by_roi.items():
             if frames[0].size > config.max_roi_pixels:
                 raise EvidenceError("ROI exceeds the configured pixel limit")
@@ -66,20 +78,24 @@ def measure_frames(
             if quality_reasons:
                 reasons.extend(f"{roi_id}: {reason}" for reason in dict.fromkeys(quality_reasons))
                 continue
-            for extractor in (extract_phase_correlation, extract_riesz):
-                try:
-                    series = extractor(frames, fps, roi_id)
-                    spectrum = estimate_spectrum(
-                        np.asarray(series.displacement_px),
-                        fps,
-                        band,
-                        window_seconds=config.welch_seconds,
-                    )
-                    if mm_per_pixel is not None:
-                        series.displacement_mm = [v * mm_per_pixel for v in series.displacement_px]
-                    candidates.append((series, spectrum))
-                except EvidenceError as exc:
-                    reasons.append(f"{roi_id}/{extractor.__name__}: {exc}")
+            work.append(RoiWork(roi_id, frames, fps, band, config))
+        if config.roi_workers > 1 and len(work) > 1:
+            with ProcessPoolExecutor(
+                max_workers=min(config.roi_workers, len(work)),
+                mp_context=multiprocessing.get_context("spawn"),
+                initializer=initialize_worker,
+            ) as pool:
+                results = list(pool.map(extract, work))
+        else:
+            results = [extract(item) for item in work]
+        for region_candidates, region_reasons in results:
+            for series, spectrum in region_candidates:
+                if mm_per_pixel is not None:
+                    series.displacement_mm = [
+                        value * mm_per_pixel for value in series.displacement_px
+                    ]
+                candidates.append((series, spectrum))
+            reasons.extend(region_reasons)
         if not candidates:
             raise EvidenceError("No ROI and extraction method produced a resolvable mode")
         roi_estimates: list[RoiEstimate] = []
@@ -108,6 +124,7 @@ def measure_frames(
             repeats=config.bootstrap_repeats,
             block_seconds=config.block_seconds,
             seed=config.seed,
+            window_seconds=config.welch_seconds,
         )
         if spectrum.snr_db < config.min_snr_db:
             reasons.append("SNR is below the configured evidence threshold")

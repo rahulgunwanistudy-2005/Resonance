@@ -2,8 +2,13 @@
 
 import os
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+def process_environment(overrides: dict[str, str]) -> dict[str, str]:
+    return {**os.environ, **overrides}
 
 
 class Settings(BaseModel):
@@ -15,6 +20,13 @@ class Settings(BaseModel):
     instance_type: str | None = None
     ami_id: str | None = None
     admin_token: str | None = Field(default=None, repr=False)
+    database_path: Path = Path("outputs/resonance.sqlite3")
+    artifact_dir: Path = Path("outputs/artifacts")
+    upload_dir: Path = Path("outputs/uploads")
+    host: str = "127.0.0.1"
+    port: int = 8000
+    sns_topic_arn: str | None = None
+    aws_region: str = "us-east-1"
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -39,6 +51,10 @@ class MeasurementConfig(BaseModel):
     max_clipped_fraction: float = Field(default=0.35, ge=0, le=1)
     max_duration_seconds: float = Field(default=60.0, gt=0)
     max_upload_bytes: int = Field(default=200_000_000, gt=0)
+    max_frames: int = Field(default=14_400, ge=32)
     max_frame_pixels: int = Field(default=3840 * 2160, gt=0)
     max_roi_pixels: int = Field(default=512 * 512, gt=0)
     max_rois: int = Field(default=8, ge=1)
+    roi_workers: int = Field(default=1, ge=1, le=8)
+    analysis_seconds: float | None = Field(default=None, ge=2, le=60)
+    extraction_method: Literal["both", "phase_correlation", "riesz"] = "both"

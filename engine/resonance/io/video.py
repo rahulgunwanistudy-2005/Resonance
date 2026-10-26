@@ -31,8 +31,10 @@ def probe_video(capture: Capture, config: MeasurementConfig) -> VideoMetadata:
                 "error",
                 "-select_streams",
                 "v:0",
+                "-read_intervals",
+                f"%+#{config.max_frames + 1}",
                 "-show_entries",
-                "format=duration:stream=width,height,avg_frame_rate,nb_frames,duration:"
+                "format=duration:stream=width,height,avg_frame_rate,nb_frames,duration,time_base:"
                 "frame=best_effort_timestamp_time",
                 "-of",
                 "json",
@@ -47,6 +49,7 @@ def probe_video(capture: Capture, config: MeasurementConfig) -> VideoMetadata:
         stream = payload["streams"][0]
         duration = float(stream.get("duration") or payload["format"]["duration"])
         playback_fps = float(Fraction(stream["avg_frame_rate"]))
+        clock_tick = float(Fraction(stream.get("time_base", "0/1")))
         times = np.asarray(
             [float(frame["best_effort_timestamp_time"]) for frame in payload["frames"]],
             dtype=np.float64,
@@ -68,15 +71,19 @@ def probe_video(capture: Capture, config: MeasurementConfig) -> VideoMetadata:
         raise EvidenceError("Video duration exceeds the limit or is invalid; trim the clip")
     if width <= 0 or height <= 0 or width * height > config.max_frame_pixels:
         raise EvidenceError("Frame dimensions exceed the processing limit; downscale the clip")
+    if len(times) >= config.max_frames:
+        raise EvidenceError("Frame count exceeds the processing limit; shorten the clip")
     if len(times) < 32 or not np.isfinite(times).all():
         raise EvidenceError("Video has too few frames or no reliable frame timestamps")
     intervals = np.diff(times)
     median = float(np.median(intervals))
     if median <= 0 or np.any(intervals <= 0):
         raise EvidenceError("Frame timestamps are not strictly increasing")
-    if float(np.max(np.abs(intervals - median)) / median) > 0.05:
+    mean_interval = float(np.mean(intervals))
+    quantization = min(1.1 * clock_tick, 0.1 * mean_interval)
+    if float(np.max(np.abs(intervals - mean_interval))) > max(0.05 * mean_interval, quantization):
         raise EvidenceError("Variable-rate or dropped frames detected; record constant-rate video")
-    actual_playback_rate = 1 / median
+    actual_playback_rate = 1 / mean_interval
     if abs(playback_fps - actual_playback_rate) / actual_playback_rate > 0.02:
         raise EvidenceError("Container fps disagrees with frame timestamps; verify capture timing")
     if not capture.acquisition_fps_verified or capture.acquisition_fps is None:
@@ -84,6 +91,8 @@ def probe_video(capture: Capture, config: MeasurementConfig) -> VideoMetadata:
             "Frame timestamps establish playback timing, not slow-motion acquisition timing. "
             "Confirm the camera acquisition fps before running a measurement."
         )
+    if len(times) / capture.acquisition_fps > config.max_duration_seconds:
+        raise EvidenceError("Acquisition duration exceeds the processing limit; shorten the clip")
     return VideoMetadata(
         width=width,
         height=height,

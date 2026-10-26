@@ -1,0 +1,47 @@
+{
+  "kind": "measured_local_roi_pool_comparison",
+  "source_tree_sha256": "c9005412024f34292e8f601401cc67d22e6dadfe0a9ceab110f643c1b5f85cac",
+  "warmup_runs": 1,
+  "roi_count": 4,
+  "rows": [
+    {
+      "workers": 1,
+      "repeats_seconds": [
+        4.451591584002017,
+        5.196073125000112,
+        4.462903957999515,
+        4.1856617500016,
+        4.332013458999427
+      ],
+      "mean_seconds": 4.525648775200534,
+      "ci95_seconds": 0.48567001276325866,
+      "peaks_hz": [
+        7.103034287977777,
+        7.103034287977777,
+        7.103034287977777,
+        7.103034287977777,
+        7.103034287977777
+      ]
+    },
+    {
+      "workers": 2,
+      "repeats_seconds": [
+        4.107885291999992,
+        4.473715957999957,
+        3.982683875001385,
+        5.909560333002446,
+        6.4382742079978925
+      ],
+      "mean_seconds": 4.982423933200335,
+      "ci95_seconds": 1.3885228966830814,
+      "peaks_hz": [
+        7.103034287977777,
+        7.103034287977777,
+        7.103034287977777,
+        7.103034287977777,
+        7.103034287977777
+      ]
+    }
+  ],
+  "includes": "Process spawn, frame serialization, extraction, spectra, FDD and bootstrap. No persistent pool or cloud inference."
+}

@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 
 import cv2
@@ -46,6 +47,31 @@ def test_playback_fps_cannot_silently_be_treated_as_acquisition_fps(capture: Cap
     capture.acquisition_fps_verified = False
     with pytest.raises(EvidenceError, match="acquisition"):
         probe_video(capture, MeasurementConfig())
+
+
+def test_quantized_webm_timestamps_are_not_mistaken_for_dropped_frames(capture: Capture) -> None:
+    target = capture.path.with_suffix(".webm")
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-loglevel",
+            "error",
+            "-i",
+            str(capture.path),
+            "-c:v",
+            "libvpx-vp9",
+            "-crf",
+            "25",
+            "-b:v",
+            "0",
+            str(target),
+        ],
+        check=True,
+    )
+    capture.path = target
+    metadata = probe_video(capture, MeasurementConfig())
+    assert metadata.playback_fps == pytest.approx(60, rel=0.001)
 
 
 def test_oversized_upload_and_invalid_roi_are_refused(capture: Capture) -> None:
