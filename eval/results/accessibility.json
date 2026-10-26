@@ -1,0 +1,79 @@
+{
+  "tool": "axe-core",
+  "checks": [
+    {
+      "width": 1440,
+      "route": "home",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "console",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "measure",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "fleet",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "agent",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "bench",
+      "violations": []
+    },
+    {
+      "width": 1440,
+      "route": "methods",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "home",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "console",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "measure",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "fleet",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "agent",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "bench",
+      "violations": []
+    },
+    {
+      "width": 390,
+      "route": "methods",
+      "violations": []
+    }
+  ],
+  "summary": {
+    "pages": 14,
+    "violations": 0
+  }
+}

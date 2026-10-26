@@ -1,0 +1,85 @@
+{
+  "checks": [
+    {
+      "route": "home",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "console",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "measure",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "fleet",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "agent",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "bench",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "methods",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "home",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "console",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "measure",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "fleet",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "agent",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "bench",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "methods",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "scenario": "upload_to_worker_to_result",
+      "success": true
+    }
+  ],
+  "page_errors": [],
+  "summary": {
+    "routes_checked": 14,
+    "overflow_failures": 0,
+    "page_errors": 0,
+    "upload_flow_passed": true
+  }
+}
