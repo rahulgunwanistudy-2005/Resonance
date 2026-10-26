@@ -31,6 +31,11 @@ async def live(socket: WebSocket, bridge_id: str) -> None:
             if current != previous:
                 await socket.send_text(current)
                 previous = current
-            await asyncio.sleep(1)
+            try:
+                message = await asyncio.wait_for(socket.receive(), timeout=1)
+            except TimeoutError:
+                continue
+            if message["type"] == "websocket.disconnect":
+                return
     except WebSocketDisconnect:
         return

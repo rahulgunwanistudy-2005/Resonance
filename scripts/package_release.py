@@ -4,6 +4,10 @@ from pathlib import Path
 
 
 def main() -> None:
+    if subprocess.run(["git", "diff", "--quiet", "HEAD"], check=False).returncode:
+        raise RuntimeError(
+            "Commit the reviewed tracked changes before packaging a release"
+        )
     output = Path("outputs/release.tar.gz")
     output.parent.mkdir(exist_ok=True)
     tracked = subprocess.check_output(["git", "ls-files", "-z"]).decode().split("\0")

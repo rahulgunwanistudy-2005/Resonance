@@ -1,5 +1,6 @@
 """Build and exercise a clean local container without copying workstation outputs."""
 
+import hashlib
 import http.client
 import json
 import subprocess
@@ -12,12 +13,32 @@ from uuid import uuid4
 from eval.synthetic import source_tree_sha256
 
 
+def application_sha256() -> str:
+    paths = [
+        Path("Dockerfile"),
+        Path("engine/pyproject.toml"),
+        Path("engine/uv.lock"),
+        *Path("engine/resonance").rglob("*.py"),
+    ]
+    for folder in ("api", "worker", "mcp", "scripts"):
+        paths.extend(Path(folder).rglob("*.py"))
+    paths.extend(path for path in Path("web").iterdir() if path.is_file())
+    paths.extend(path for path in Path("web/src").rglob("*") if path.is_file())
+    digest = hashlib.sha256()
+    for path in sorted(paths):
+        digest.update(str(path).encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
 def main() -> None:
     folder = Path("outputs")
     folder.mkdir(exist_ok=True)
     name = "resonance-quickstart-" + uuid4().hex[:8]
     token = folder / "container-qa-token"
     source_sha = source_tree_sha256()
+    application_sha = application_sha256()
     started = time.perf_counter()
     with (folder / "quickstart-build.log").open("w") as log:
         subprocess.run(
@@ -96,9 +117,12 @@ def main() -> None:
             check=True,
             timeout=240,
         )
-        if source_tree_sha256() != source_sha:
+        if (
+            source_tree_sha256() != source_sha
+            or application_sha256() != application_sha
+        ):
             raise RuntimeError(
-                "Engine/evaluator source changed during verification; rerun against the final snapshot"
+                "Application/evaluator source changed during verification; rerun against the final snapshot"
             )
         Path("eval/results/quickstart.json").write_text(
             json.dumps(
@@ -106,6 +130,7 @@ def main() -> None:
                     "kind": "executed_clean_container_quickstart",
                     "verified": True,
                     "source_tree_sha256": source_sha,
+                    "application_source_sha256": application_sha,
                     "image_id": image["Id"],
                     "architecture": image["Architecture"],
                     "build_seconds": build_seconds,

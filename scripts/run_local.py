@@ -3,6 +3,7 @@
 import signal
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 
@@ -39,12 +40,18 @@ def main() -> None:
             settings.host,
             "--port",
             str(settings.port),
+            "--ws-max-size",
+            "65536",
         ],
         [sys.executable, "-m", "worker.main"],
     ]
     processes = [subprocess.Popen(command, env=environment) for command in commands]
 
+    stopping = False
+
     def stop(_signal: int, _frame: object) -> None:
+        nonlocal stopping
+        stopping = True
         for process in processes:
             process.terminate()
 
@@ -55,12 +62,23 @@ def main() -> None:
         flush=True,
     )
     try:
-        processes[0].wait()
+        while all(process.poll() is None for process in processes):
+            time.sleep(0.5)
+        if not stopping and any(
+            process.poll() not in (None, 0) for process in processes
+        ):
+            raise RuntimeError(
+                "The local API or worker stopped unexpectedly; check its startup log"
+            )
     finally:
         for process in processes:
             if process.poll() is None:
                 process.terminate()
-            process.wait(timeout=10)
+            try:
+                process.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
 
 
 if __name__ == "__main__":

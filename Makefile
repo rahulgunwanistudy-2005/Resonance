@@ -1,6 +1,6 @@
 PYTHON := .venv/bin/python
 
-.PHONY: setup check test eval eval-stabilization report-preview probe models verify-cool demo run web bench mcp-check infra-synth release report
+.PHONY: setup check test eval eval-stabilization report-preview probe models verify-cool demo run web bench mcp-check infra-synth release report quality quickstart-check bench-refresh
 setup:
 	UV_PROJECT_ENVIRONMENT=../.venv uv sync --project engine --extra local --extra service --extra report --extra cloud --frozen
 
@@ -58,3 +58,12 @@ models:
 
 verify-cool:
 	$(PYTHON) scripts/verify_cool.py
+
+quality:
+	$(PYTHON) -m eval.quality
+
+quickstart-check:
+	$(PYTHON) -m eval.quickstart
+
+bench-refresh:
+	$(PYTHON) -m bench.stabilization_refresh

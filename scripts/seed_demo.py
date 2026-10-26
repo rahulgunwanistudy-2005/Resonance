@@ -18,7 +18,7 @@ from resonance.models import Bridge, Capture, FrequencyBand, Roi
 def create_video(path: Path, frequency: float, seed: int) -> None:
     rng = np.random.default_rng(seed)
     texture = rng.normal(size=(256, 384)).astype(np.float32)
-    texture = cv2.GaussianBlur(texture, (0, 0), 1)
+    texture = np.asarray(cv2.GaussianBlur(texture, (0, 0), 1), dtype=np.float32)
     texture = np.clip(
         (texture - texture.mean()) / texture.std() * 30 + 128, 0, 255
     ).astype(np.uint8)

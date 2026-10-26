@@ -47,6 +47,7 @@ def process_one(catalog: Catalog) -> bool:
                 estimate is None
                 or estimate.spectrum is None
                 or estimate.outcome != "MEASURED"
+                or estimate.ci_hz is None
                 or not estimate.input_sha256
                 or estimate.input_sha256 == current_hash
                 or item.capture.temperature_c is None
@@ -54,11 +55,18 @@ def process_one(catalog: Catalog) -> bool:
             ):
                 continue
             try:
-                expected = predict(baseline, item.capture.temperature_c).frequency_hz
+                prediction = predict(baseline, item.capture.temperature_c)
+                expected = prediction.frequency_hz
             except EvidenceError:
                 continue
             drop = (expected - estimate.spectrum.peak_hz) / expected
-            drops.append((estimate.input_sha256, drop >= policy.alert_drop_fraction))
+            drops.append(
+                (
+                    estimate.input_sha256,
+                    drop >= policy.alert_drop_fraction
+                    and estimate.ci_hz[1] < prediction.lower_hz,
+                )
+            )
         tools = VideoTools(record.capture, catalog.settings)
         record.result = run(
             tools,
