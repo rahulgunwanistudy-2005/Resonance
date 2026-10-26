@@ -93,11 +93,18 @@ def prepare_evidence(catalog: Catalog) -> None:
                     "25",
                     "-b:v",
                     "0",
-                    str(preview),
+                    "-deadline",
+                    "realtime",
+                    "-cpu-used",
+                    "6",
+                    "-threads",
+                    "2",
+                    str(preview.with_suffix(".partial.webm")),
                 ],
                 check=True,
                 timeout=120,
             )
+            preview.with_suffix(".partial.webm").replace(preview)
         if record.result and record.result.estimate and record.result.estimate.selected:
             artifact = (
                 catalog.settings.artifact_dir / record.capture.id / "magnified.webm"

@@ -41,7 +41,12 @@ class Catalog:
 
     def create_capture(self, value: CaptureCreate, client: str) -> UploadTicket:
         self.store.limit(f"upload:{client}")
-        bridge = self.store.get("bridge", value.bridge_id, BridgeRecord).bridge
+        bridge_record = self.store.get("bridge", value.bridge_id, BridgeRecord)
+        if bridge_record.synthetic:
+            raise DomainError(
+                "Enroll your own bridge; private recordings cannot share a generated demonstration baseline"
+            )
+        bridge = bridge_record.bridge
         key = uuid4().hex
         capture = Capture(
             id=key,
@@ -49,7 +54,7 @@ class Catalog:
             path=self.settings.upload_dir / f"{key}.video",
             rois=value.rois or bridge.rois,
             band=bridge.band,
-            calibration=value.calibration or bridge.calibration,
+            calibration=value.calibration,
             temperature_c=value.temperature_c,
             acquisition_fps=value.acquisition_fps,
             acquisition_fps_verified=value.acquisition_fps_verified,

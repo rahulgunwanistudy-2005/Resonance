@@ -18,3 +18,5 @@ models/*
 !models/.gitkeep
 outputs/
 *.egg-info/
+
+.pnpm-store/

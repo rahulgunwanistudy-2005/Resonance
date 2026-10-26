@@ -64,9 +64,16 @@ def magnify(capture: Capture, estimate: ModalEstimate, path: Path, gain: float =
             "25",
             "-b:v",
             "0",
-            str(path),
+            "-deadline",
+            "realtime",
+            "-cpu-used",
+            "6",
+            "-threads",
+            "2",
+            str(path.with_suffix(".partial.webm")),
         ],
         check=True,
         timeout=60,
     )
+    path.with_suffix(".partial.webm").replace(path)
     intermediate.unlink()

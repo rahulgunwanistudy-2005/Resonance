@@ -87,10 +87,19 @@ def process_one(catalog: Catalog) -> bool:
             from resonance.render.audify import audify
             from resonance.render.plots import plot_measurement
 
+            reference_hz = None
+            if baseline is not None and record.capture.temperature_c is not None:
+                try:
+                    reference_hz = predict(
+                        baseline, record.capture.temperature_c
+                    ).frequency_hz
+                except EvidenceError:
+                    reference_hz = None
             audify(
                 record.result.estimate.selected,
                 record.result.estimate.spectrum.peak_hz,
                 folder / "motion.wav",
+                reference_hz=reference_hz,
             )
             plot_measurement(record.result.estimate, folder / "spectrum.png")
             record.artifacts.extend(["motion.wav", "spectrum.png"])

@@ -163,3 +163,38 @@ def test_schema_and_body_limits_and_websocket(settings: Settings) -> None:
             ).status_code
             == 422
         )
+
+
+def test_private_capture_cannot_use_synthetic_baseline_or_inherit_scale(
+    settings: Settings,
+) -> None:
+    from api.app.schemas import BridgeRecord
+
+    with TestClient(create_app(settings)) as client:
+        response = client.post(
+            "/api/bridges",
+            json={
+                "name": "Calibration boundary",
+                "band": {"low_hz": 1, "high_hz": 15},
+                "rois": [{"id": "deck", "x": 0, "y": 0, "width": 64, "height": 64}],
+                "calibration": {
+                    "mm_per_pixel": 2,
+                    "reference_length_mm": 20,
+                    "points": [[0, 0], [10, 0]],
+                },
+            },
+        )
+        record = BridgeRecord.model_validate(response.json())
+        request = {
+            "bridge_id": record.bridge.id,
+            "acquisition_fps": 60,
+            "acquisition_fps_verified": True,
+        }
+        ticket = client.post("/api/captures", json=request).json()
+        capture = client.get("/api/captures/" + ticket["capture_id"]).json()
+        assert capture["capture"]["calibration"] is None
+        record.synthetic = True
+        LocalStore(settings.database_path).put(
+            "bridge", record.bridge.id, record, record.bridge.id
+        )
+        assert client.post("/api/captures", json=request).status_code == 400

@@ -1,0 +1,14 @@
+.git
+.venv
+.pnpm-store
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+outputs
+data
+models
+web/dist
+.env
+original-vs-actual-tv.png

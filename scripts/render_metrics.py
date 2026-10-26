@@ -3,7 +3,7 @@
 import argparse
 from pathlib import Path
 
-from check_no_hardcoded_metrics import TOKEN, check_text, resolve
+from scripts.check_no_hardcoded_metrics import TOKEN, check_text, resolve
 
 
 def main() -> None:
