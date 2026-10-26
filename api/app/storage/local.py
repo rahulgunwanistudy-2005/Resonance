@@ -1,7 +1,7 @@
 import hashlib
 import sqlite3
 import time
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
@@ -75,6 +75,34 @@ class LocalStore:
                     (kind, bridge_id, limit),
                 ).fetchall()
         return [model.model_validate_json(row["body"]) for row in rows]
+
+    def delete_bridge(self, bridge_id: str, capture_ids: Sequence[str]) -> None:
+        with self.connection() as db:
+            db.execute("BEGIN IMMEDIATE")
+            approvals = [
+                row["id"]
+                for row in db.execute(
+                    "SELECT id FROM documents WHERE kind='approval' AND bridge_id=?",
+                    (bridge_id,),
+                )
+            ]
+            for key in approvals:
+                if db.execute(
+                    "SELECT 1 FROM outbox WHERE approval_id=? AND state='pending'",
+                    (key,),
+                ).fetchone():
+                    raise DomainError(
+                        "An approved inspection notification is still awaiting delivery",
+                        409,
+                    )
+            db.executemany(
+                "DELETE FROM outbox WHERE approval_id=?", [(k,) for k in approvals]
+            )
+            db.executemany("DELETE FROM jobs WHERE id=?", [(k,) for k in capture_ids])
+            db.executemany(
+                "DELETE FROM uploads WHERE id=?", [(k,) for k in capture_ids]
+            )
+            db.execute("DELETE FROM documents WHERE bridge_id=?", (bridge_id,))
 
     def limit(self, key: str, maximum: int = 12) -> None:
         bucket = int(time.time() // 60)

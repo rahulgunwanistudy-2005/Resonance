@@ -1,4 +1,5 @@
 import secrets
+import shutil
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -8,6 +9,7 @@ from api.app.schemas import (
     ApprovalRecord,
     BaselineInput,
     BridgeCreate,
+    BridgeDeleted,
     BridgeRecord,
     CaptureCreate,
     CaptureRecord,
@@ -31,6 +33,8 @@ class Catalog:
         bridge = Bridge(
             id=uuid4().hex,
             name=value.name,
+            span_type=value.span_type,
+            span_length_m=value.span_length_m,
             band=value.band,
             rois=value.rois,
             calibration=value.calibration,
@@ -140,6 +144,40 @@ class Catalog:
         baseline = fit_baseline(bridge_id, observations)
         self.store.put("baseline", bridge_id, baseline, bridge_id)
         return baseline
+
+    def current_baseline(self, bridge_id: str) -> Baseline | None:
+        self.store.get("bridge", bridge_id, BridgeRecord)
+        try:
+            return self.store.get("baseline", bridge_id, Baseline)
+        except DomainError as exc:
+            if exc.status_code == 404:
+                return None
+            raise
+
+    def delete_bridge(self, bridge_id: str) -> BridgeDeleted:
+        record = self.store.get("bridge", bridge_id, BridgeRecord)
+        if record.synthetic:
+            raise DomainError("The generated demonstration cannot be deleted", 409)
+        captures = self.store.list("capture", CaptureRecord, bridge_id, limit=100_000)
+        if any(item.status in ("queued", "processing") for item in captures):
+            raise DomainError(
+                "A measurement is still running; delete after it finishes", 409
+            )
+        uploads = self.settings.upload_dir.resolve()
+        artifacts = self.settings.artifact_dir.resolve()
+        for item in captures:
+            video = item.capture.path.resolve()
+            if video.is_relative_to(uploads) and video.is_file():
+                video.unlink()
+            folder = (self.settings.artifact_dir / item.capture.id).resolve()
+            if (
+                folder.is_relative_to(artifacts)
+                and folder != artifacts
+                and folder.is_dir()
+            ):
+                shutil.rmtree(folder)
+        self.store.delete_bridge(bridge_id, [item.capture.id for item in captures])
+        return BridgeDeleted(bridge_id=bridge_id, captures_deleted=len(captures))
 
     def artifact(self, capture_id: str, name: str) -> Path:
         record = self.store.get("capture", capture_id, CaptureRecord)

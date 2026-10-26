@@ -9,6 +9,8 @@ from resonance.models import Bridge, Calibration, Capture, Contract, FrequencyBa
 
 class BridgeCreate(Contract):
     name: str = Field(min_length=1, max_length=160)
+    span_type: Literal["cantilever", "simply_supported", "unknown"] = "unknown"
+    span_length_m: float | None = Field(default=None, gt=0, le=10_000)
     band: FrequencyBand
     rois: list[Roi] = Field(min_length=1, max_length=8)
     calibration: Calibration | None = None
@@ -96,6 +98,14 @@ class Health(Contract):
     transport: str = "Local SQLite queue"
     planner: str = "Deterministic policy"
     cloud_deployed: bool = False
+    admin_configured: bool = False
+    stabilization_ready: bool = False
+    vehicle_detection_ready: bool = False
+
+
+class BridgeDeleted(Contract):
+    bridge_id: str
+    captures_deleted: int
 
 
 class DomainError(Exception):

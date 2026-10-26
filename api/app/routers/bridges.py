@@ -1,7 +1,13 @@
 from fastapi import APIRouter, Depends, Request
 
 from api.app.deps import CatalogDep, require_admin
-from api.app.schemas import BaselineInput, BridgeCreate, BridgeRecord, CaptureRecord
+from api.app.schemas import (
+    BaselineInput,
+    BridgeCreate,
+    BridgeDeleted,
+    BridgeRecord,
+    CaptureRecord,
+)
 from resonance.models import Baseline
 
 router = APIRouter()
@@ -25,6 +31,20 @@ def create_bridge(
 @router.get("/bridges/{bridge_id}/history", response_model=list[CaptureRecord])
 def history(bridge_id: str, service: CatalogDep) -> list[CaptureRecord]:
     return service.history(bridge_id)
+
+
+@router.delete(
+    "/bridges/{bridge_id}",
+    response_model=BridgeDeleted,
+    dependencies=[Depends(require_admin)],
+)
+def delete_bridge(bridge_id: str, service: CatalogDep) -> BridgeDeleted:
+    return service.delete_bridge(bridge_id)
+
+
+@router.get("/bridges/{bridge_id}/baseline", response_model=Baseline | None)
+def current_baseline(bridge_id: str, service: CatalogDep) -> Baseline | None:
+    return service.current_baseline(bridge_id)
 
 
 @router.post(

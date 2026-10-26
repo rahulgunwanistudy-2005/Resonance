@@ -23,6 +23,11 @@
     },
     {
       "width": 1440,
+      "route": "desk",
+      "violations": []
+    },
+    {
+      "width": 1440,
       "route": "agent",
       "violations": []
     },
@@ -58,6 +63,11 @@
     },
     {
       "width": 390,
+      "route": "desk",
+      "violations": []
+    },
+    {
+      "width": 390,
       "route": "agent",
       "violations": []
     },
@@ -73,7 +83,7 @@
     }
   ],
   "summary": {
-    "pages": 14,
+    "pages": 16,
     "violations": 0
   }
 }

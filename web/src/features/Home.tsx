@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
+import { BridgeScene } from "../components/BridgeScene";
+import { Arrow, PlayGlyph, Spark } from "../components/Marks";
 import type { CaptureRecord } from "../types";
 export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
   const [changed, setChanged] = useState(false);
@@ -20,6 +22,12 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
   );
   const record = changed ? altered : reference;
   const estimate = record?.result?.estimate;
+  const before = reference?.result?.estimate;
+  const after = altered?.result?.estimate;
+  const shift =
+    before?.spectrum && after?.spectrum
+      ? after.spectrum.peak_hz - before.spectrum.peak_hz
+      : null;
   function animate() {
     const current = video.current;
     const series = estimate?.selected;
@@ -37,129 +45,238 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
       if (!current.paused) animation.current = requestAnimationFrame(animate);
     }
   }
+  function pick(next: boolean) {
+    cancelAnimationFrame(animation.current);
+    setChanged(next);
+    setDeflection(0);
+  }
   return (
-    <section className="home">
-      <div className="home-copy">
-        <p className="context">Camera-based structural triage</p>
-        <h1>Watch a structure breathe.</h1>
-        <p className="intro">
-          An ordinary recording becomes vibration evidence. Follow the motion,
-          question a persistent change, and keep an engineer in control.
-        </p>
-        <div className="home-actions">
-          <a className="primary" href="#/measure">
-            Measure a video
-          </a>
+    <>
+      <section className="hero" aria-labelledby="hero-title">
+        <div className="hero-scene">
+          <BridgeScene
+            mood="dusk"
+            label="Illustrated suspension bridge at dusk with a wave ribbon along the deck"
+          />
+        </div>
+        <div className="hero-body">
+          <div className="hero-copy">
+            <p className="eyebrow">
+              Cameras listen.
+              <br />
+              Bridges speak.
+            </p>
+            <h1 id="hero-title">
+              Every bridge
+              <br />
+              has a <em>heartbeat.</em>
+            </h1>
+            <p className="hero-lede">
+              Resonance turns an ordinary recording into vibration evidence, so
+              a persistent change in how a structure moves can be questioned
+              while an engineer stays in control.
+            </p>
+            <div className="hero-actions">
+              <a className="primary" href="#/measure">
+                Measure a video
+                <Arrow />
+              </a>
+              <button
+                className="play-link"
+                onClick={() => record && onOpen(record.capture.id)}
+                disabled={!record}
+              >
+                <span className="play-ring">
+                  <PlayGlyph />
+                </span>
+                Open demonstration
+              </button>
+            </div>
+          </div>
+          <div className="hero-aside">
+            <p className="scribble" aria-hidden="true">
+              The bridge
+              <br />
+              is breathing.
+            </p>
+            <div className="dial">
+              <svg viewBox="0 0 110 36" aria-hidden="true">
+                <path d="M2 18 C12 18 14 4 24 4 S36 32 46 32 S58 4 68 4 S80 32 90 32 S98 18 108 18" />
+              </svg>
+              <strong>
+                {before?.spectrum ? (
+                  <>
+                    {before.spectrum.peak_hz.toFixed(2)} <small>Hz</small>
+                  </>
+                ) : (
+                  "Not run"
+                )}
+              </strong>
+              <span>Demo reference frequency</span>
+            </div>
+          </div>
+        </div>
+        <ul className="hero-principles" id="technology">
+          <li>
+            <strong>Evidence before a verdict</strong>
+            <span>
+              Weak texture, uncertain timing or no baseline yield insufficient
+              evidence.
+            </span>
+          </li>
+          <li>
+            <strong>A plan that responds</strong>
+            <span>
+              The agent changes regions, windows and methods when the visual
+              evidence is weak.
+            </span>
+          </li>
+          <li>
+            <strong>Review stays human</strong>
+            <span>
+              A confirmed change requests inspection review, never a safety
+              verdict.
+            </span>
+          </li>
+          <li>
+            <strong>Every camera</strong>
+            <span>A stethoscope for the structure it can see.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="demo" aria-labelledby="demo-title">
+        <div className="demo-heading">
+          <h2 id="demo-title" className="display">
+            Hear a change in the beam's voice
+          </h2>
+          <p>
+            Two generated captures of the same beam: a reference, and one with
+            its stiffness altered. Not evidence of real bridge damage.
+          </p>
+        </div>
+        <div className="steps" role="group" aria-label="Demonstration capture">
           <button
-            onClick={() => record && onOpen(record.capture.id)}
-            disabled={!record}
+            className="step"
+            aria-pressed={!changed}
+            onClick={() => pick(false)}
           >
-            Open demonstration
+            <span>1</span>Reference capture
+          </button>
+          <button
+            className="step changed"
+            aria-pressed={changed}
+            onClick={() => pick(true)}
+          >
+            <span>2</span>Changed frequency
           </button>
         </div>
-        <p className="privacy">
-          The scene below is generated. It demonstrates the working measurement
-          path; it is not evidence of real bridge damage.
-        </p>
-      </div>
-      <div className="home-instrument">
-        <div className="home-video">
-          <video
-            ref={video}
-            key={record?.capture.id}
-            controls
-            preload="auto"
-            src={
-              record ? `/api/captures/${record.capture.id}/video` : undefined
-            }
-            onPlay={animate}
-            onPause={() => cancelAnimationFrame(animation.current)}
-            aria-label="Generated beam reference and changed-frequency video"
-          />
-          <svg viewBox="0 0 400 260" aria-hidden="true">
-            <path
-              d={`M34 132 Q200 ${132 + deflection} 366 132`}
-              fill="none"
-              stroke="#edb38b"
-              strokeWidth="2"
-            />
-          </svg>
+        <div className={"demo-stage" + (record ? "" : " empty")}>
+          {record ? (
+            <>
+              <video
+                ref={video}
+                key={record.capture.id}
+                controls
+                preload="auto"
+                src={`/api/captures/${record.capture.id}/video`}
+                onPlay={animate}
+                onPause={() => cancelAnimationFrame(animation.current)}
+                aria-label="Generated beam reference and changed-frequency video"
+              />
+              <svg viewBox="0 0 400 260" aria-hidden="true">
+                <path
+                  d={`M34 132 Q200 ${132 + deflection} 366 132`}
+                  fill="none"
+                  strokeWidth="2"
+                />
+              </svg>
+            </>
+          ) : (
+            <>
+              <BridgeScene mood="night" ribbon={false} />
+              <p className="stage-empty" role="status">
+                {history.isPending
+                  ? "Loading the generated demonstration…"
+                  : "The generated demonstration has not been seeded yet."}
+              </p>
+            </>
+          )}
         </div>
-        <div className="home-comparison">
-          <div className="toolbar">
-            <button
-              className="quiet"
-              aria-pressed={!changed}
-              onClick={() => {
-                cancelAnimationFrame(animation.current);
-                setChanged(false);
-                setDeflection(0);
-              }}
-            >
-              Reference capture
-            </button>
-            <button
-              className="quiet"
-              aria-pressed={changed}
-              onClick={() => {
-                cancelAnimationFrame(animation.current);
-                setChanged(true);
-                setDeflection(0);
-              }}
-            >
-              Changed frequency
-            </button>
-          </div>
-          <div className="home-reading">
-            <span>Measured dominant frequency</span>
-            <strong>
+        <div className="panel-row">
+          <section className="panel" aria-labelledby="before-title">
+            <h3 id="before-title">Before (reference)</h3>
+            <p className="reading">
+              {before?.spectrum ? (
+                <>
+                  {before.spectrum.peak_hz.toFixed(3)} <small>Hz</small>
+                </>
+              ) : (
+                "Not run"
+              )}
+            </p>
+            {before?.selected && (
+              <Spark
+                values={before.selected.displacement_px}
+                className="teal"
+              />
+            )}
+          </section>
+          <section className="panel" aria-labelledby="after-title">
+            <h3 id="after-title">After (changed)</h3>
+            {after?.spectrum ? (
+              <>
+                <p className="reading coral">
+                  {after.spectrum.peak_hz.toFixed(3)} <small>Hz</small>
+                  {shift !== null && before?.spectrum && (
+                    <span className="delta">
+                      {shift < 0 ? "▼" : "▲"} {Math.abs(shift).toFixed(3)} Hz ·{" "}
+                      {Math.abs(
+                        (shift / before.spectrum.peak_hz) * 100,
+                      ).toFixed(1)}
+                      %
+                    </span>
+                  )}
+                </p>
+                {after.selected && (
+                  <Spark
+                    values={after.selected.displacement_px}
+                    className="coral"
+                  />
+                )}
+              </>
+            ) : (
+              <p className="placeholder">Run the changed capture to compare.</p>
+            )}
+          </section>
+          <section className="panel" aria-labelledby="listen-title">
+            <h3 id="listen-title">Listen</h3>
+            <p className="reading-label">Measured dominant frequency</p>
+            <p className="reading small">
               {estimate?.spectrum
                 ? estimate.spectrum.peak_hz.toFixed(3) + " Hz"
                 : "Awaiting generated demonstration"}
-            </strong>
-          </div>
-          {record?.artifacts.includes("motion.wav") && (
-            <label className="listen-label">
-              Listen to measured motion, time-compressed and looped
-              <audio
-                key={record.capture.id}
-                controls
-                preload="none"
-                src={`/api/captures/${record.capture.id}/artifacts/motion.wav`}
-              />
-            </label>
-          )}
-          <p className="help">
-            The deflection overlay is exaggerated and stops at the measured
-            window. The tone comes from measured displacement, played faster and
-            looped for listening. Amplitude remains experimental.
-          </p>
+            </p>
+            {record?.artifacts.includes("motion.wav") && (
+              <label className="listen-label">
+                Listen to measured motion, time-compressed and looped
+                <audio
+                  key={record.capture.id}
+                  controls
+                  preload="none"
+                  src={`/api/captures/${record.capture.id}/artifacts/motion.wav`}
+                />
+              </label>
+            )}
+            <p className="help">
+              The deflection overlay is exaggerated and stops at the measured
+              window. The tone comes from measured displacement, played faster
+              and looped. A lower frequency sounds flat. Amplitude remains
+              experimental.
+            </p>
+          </section>
         </div>
-      </div>
-      <div className="home-principles">
-        <section>
-          <h2>Evidence before a verdict</h2>
-          <p>
-            Inspect the recording, displacement and spectrum together. Weak
-            texture, uncertain timing or an absent baseline produce insufficient
-            evidence.
-          </p>
-        </section>
-        <section>
-          <h2>A plan that responds</h2>
-          <p>
-            The agent changes regions, windows and extraction methods when
-            visual evidence is weak. Every action remains in the trace.
-          </p>
-        </section>
-        <section>
-          <h2>Review stays human</h2>
-          <p>
-            A confirmed change requests inspection review. Approval requires a
-            reviewer and a reason. Resonance does not certify structural safety.
-          </p>
-        </section>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

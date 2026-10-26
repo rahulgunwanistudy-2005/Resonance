@@ -11,7 +11,7 @@ import numpy as np
 from api.app.schemas import BaselineInput, BridgeRecord, CaptureRecord, DomainError
 from api.app.services.catalog import Catalog
 from api.app.services.measure.jobs import process_one
-from resonance.config import Settings
+from resonance.config import Settings, load_env_file
 from resonance.models import Bridge, Capture, FrequencyBand, Roi
 
 
@@ -119,6 +119,7 @@ def prepare_evidence(catalog: Catalog) -> None:
 
 
 def main() -> None:
+    load_env_file()
     catalog = Catalog(Settings.from_env())
     try:
         catalog.store.get("bridge", "demo-bridge", BridgeRecord)

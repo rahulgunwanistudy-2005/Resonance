@@ -72,7 +72,7 @@ def process_one(catalog: Catalog) -> bool:
             tools,
             bridge_id=record.capture.bridge_id,
             capture_id=key,
-            initial_plan=Plan(roi_ids=[record.capture.rois[0].id]),
+            initial_plan=Plan(roi_ids=[roi.id for roi in record.capture.rois]),
             baseline=baseline,
             temperature_c=record.capture.temperature_c,
             previous_drops=drops,

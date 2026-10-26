@@ -6,8 +6,10 @@ export function Chart({
   y,
   xLabel,
   yLabel,
+  color = "#3DE0D0",
 }: {
   title: string;
+  color?: string;
   x: number[];
   y: number[];
   xLabel: string;
@@ -23,19 +25,21 @@ export function Chart({
         width: Math.max(240, root.clientWidth),
         height: 200,
         scales: { x: { time: false } },
-        series: [{}, { label: yLabel, stroke: "#8A3B17", width: 1.5 }],
+        series: [{}, { label: yLabel, stroke: color, width: 1.5 }],
         axes: [
           {
             label: xLabel,
-            font: "12px Overpass",
-            labelFont: "12px Overpass",
-            stroke: "#1F2B33",
-            grid: { stroke: "#d5d7d3" },
+            font: "12px Manrope",
+            labelFont: "12px Manrope",
+            stroke: "#A9B6CE",
+            grid: { stroke: "rgba(160,180,230,0.12)" },
+            ticks: { stroke: "rgba(160,180,230,0.25)" },
           },
           {
-            font: "12px Overpass",
-            stroke: "#1F2B33",
-            grid: { stroke: "#d5d7d3" },
+            font: "12px Manrope",
+            stroke: "#A9B6CE",
+            grid: { stroke: "rgba(160,180,230,0.12)" },
+            ticks: { stroke: "rgba(160,180,230,0.25)" },
           },
         ],
         legend: { show: false },
@@ -52,7 +56,7 @@ export function Chart({
       observer.disconnect();
       plot.destroy();
     };
-  }, [x, y, xLabel, yLabel]);
+  }, [x, y, xLabel, yLabel, color]);
   return (
     <section className="chart">
       <div className="section-title">

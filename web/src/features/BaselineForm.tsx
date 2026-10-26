@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api, json } from "../api";
-import type { CaptureRecord } from "../types";
+import type { Baseline, CaptureRecord } from "../types";
 
 export function BaselineForm({
   bridgeId,
@@ -16,6 +16,7 @@ export function BaselineForm({
   const [confirmed, setConfirmed] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState<Baseline | null>(null);
   const candidates = history.filter(
     (row) =>
       row.result?.estimate?.outcome === "MEASURED" &&
@@ -25,7 +26,7 @@ export function BaselineForm({
     setBusy(true);
     setMessage("");
     try {
-      await api(`/bridges/${bridgeId}/baseline`, {
+      const baseline = await api<Baseline>(`/bridges/${bridgeId}/baseline`, {
         method: "POST",
         headers: { Authorization: "Bearer " + token },
         body: json({ capture_ids: selected, confirmed_healthy: confirmed }),
@@ -33,6 +34,7 @@ export function BaselineForm({
       setMessage(
         "Healthy baseline saved. It applies to subsequent measurements within its observed temperature range.",
       );
+      setSaved(baseline);
       setToken("");
       await onSaved();
     } catch (error) {
@@ -104,6 +106,37 @@ export function BaselineForm({
         Save healthy baseline
       </button>
       <p role="status">{message}</p>
+      {saved && (
+        <dl className="facts" aria-label="Saved baseline">
+          <div>
+            <dt>Healthy reference frequency</dt>
+            <dd>{saved.f0_hz.toFixed(3)} Hz</dd>
+          </div>
+          <div>
+            <dt>Captures</dt>
+            <dd>{saved.capture_ids.length}</dd>
+          </div>
+          <div>
+            <dt>Reference temperature</dt>
+            <dd>{saved.temperature_reference_c.toFixed(1)} °C</dd>
+          </div>
+          <div>
+            <dt>Valid temperature range</dt>
+            <dd>
+              {saved.temperature_min_c.toFixed(1)} –{" "}
+              {saved.temperature_max_c.toFixed(1)} °C
+            </dd>
+          </div>
+          <div>
+            <dt>Residual spread</dt>
+            <dd>{saved.residual_std_hz.toFixed(4)} Hz</dd>
+          </div>
+          <div>
+            <dt>Temperature coefficient</dt>
+            <dd>{saved.alpha_per_c.toFixed(5)} per °C</dd>
+          </div>
+        </dl>
+      )}
     </details>
   );
 }

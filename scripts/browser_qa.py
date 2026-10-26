@@ -33,6 +33,7 @@ def main() -> None:
                 "console",
                 "measure",
                 "fleet",
+                "desk",
                 "agent",
                 "bench",
                 "methods",
@@ -96,7 +97,7 @@ def main() -> None:
             "I confirmed the camera acquisition rate, including slow-motion settings."
         ).check()
         page.get_by_role("button", name="Run measurement", exact=True).click()
-        page.wait_for_url("**/#/console")
+        page.wait_for_url("**/#/console**")
         page.get_by_text("Dominant frequency", exact=True).wait_for(timeout=120000)
         page.get_by_role("button", name="Show numeric table").first.click()
         assert (

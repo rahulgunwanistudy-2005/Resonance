@@ -8,6 +8,8 @@ The generated desk-beam demonstration, uploaded-video measurement path, separate
 
 Requirements: Python 3.12, uv 0.8.22, Node 24, pnpm 11.22.0 and FFmpeg with both `ffmpeg` and `ffprobe` available. Dependencies are pinned in `engine/uv.lock` and `web/pnpm-lock.yaml`.
 
+Optional settings live in `.env` (copy `.env.example`). `make run` and `make demo` load it at startup and list the variable names they loaded; variables already set in the shell take precedence. `.env` is ignored by Git.
+
 ```sh
 make setup
 make web
@@ -17,9 +19,9 @@ make run
 
 Open [the local console](http://127.0.0.1:8000). The API and worker are separate processes; SQLite persists their queue and results. The app binds to the local interface by default.
 
-The guided path: play the labeled generated capture, inspect its trace and spectrum, open the numeric chart table, then review the inspection request. “Measure a video” runs your own clip through the same worker. Confirm the camera acquisition rate, select a textured region, optionally click two scale points and enter the known length, then run the measurement. A missing healthy baseline produces insufficient condition evidence even when the vibration measurement succeeds.
+The guided path: play the labeled generated capture, inspect its trace and spectrum, open the numeric chart table, then review the inspection request. “Measure a video” runs your own clip through the same worker. Confirm the camera acquisition rate, select a textured region, optionally click two scale points and enter the known length, then run the measurement. Every drawn region is measured; two or more regions along the span add a per-region table and a mode shape, and regions without usable texture are dropped. A missing healthy baseline produces insufficient condition evidence even when the vibration measurement succeeds; the console shows the current baseline for each bridge.
 
-For approval testing, the local runner creates a private token file at `outputs/local-admin-token`. Enter that token and a reason in Agent review. The browser keeps it only in memory. Approval creates a local delivery receipt; no external email is sent. Rejection keeps its reason. Do not show the token in the submission video.
+For approval testing, set `RESONANCE_ADMIN_TOKEN` in `.env` (at least 24 characters); without it the local runner creates a private token file at `outputs/local-admin-token`. Enter the token and a reason in Inspections. The same token protects baseline designation and permanent bridge deletion from the console (the generated demonstration cannot be deleted). The browser keeps it only in memory. Approval creates a local delivery receipt; no external email is sent. Rejection keeps its reason. Do not show the token in the submission video.
 
 ## Verification and evidence
 
@@ -70,7 +72,7 @@ Recordings are not available yet. The evaluators refuse absent inputs and do not
 .venv/bin/python -m eval.field --root data/field --template field-capture-template.json
 ```
 
-Desk accelerometer CSV columns are `time_seconds` and `acceleration_m_s2`; each video must have a matching CSV basename. Use distinct trials and keep sensor mass and camera settings consistent. Choose the same enrolled bridge for its subsequent uploads, then designate independently confirmed healthy trials through the protected baseline form. Timing alignment, healthy/damage state labels and ground-truth quality need engineering review. Field evaluation reports repeatability, not accuracy against missing ground truth.
+The console's Desk bridge page downloads a matching `desk-capture-template.json`, explains the file naming (`healthy_1.mp4` with `healthy_1.csv`, then `loosened_`, `mass_` and `cut_` trials) and shows the evaluator's comparison once `eval/results/desk.json` exists. Desk accelerometer CSV columns are `time_seconds` and `acceleration_m_s2`; each video must have a matching CSV basename. Use distinct trials and keep sensor mass and camera settings consistent. Choose the same enrolled bridge for its subsequent uploads, then designate independently confirmed healthy trials through the protected baseline form. Timing alignment, healthy/damage state labels and ground-truth quality need engineering review. Field evaluation reports repeatability, not accuracy against missing ground truth.
 
 ## MCP
 

@@ -9,8 +9,11 @@ from pathlib import Path
 
 def main() -> None:
     import secrets
-    from resonance.config import Settings
+    from resonance.config import Settings, load_env_file
 
+    loaded = load_env_file()
+    if loaded:
+        print(f"Loaded from .env: {', '.join(sorted(loaded))}", flush=True)
     settings = Settings.from_env()
     token_file = Path("outputs/local-admin-token")
     token_file.parent.mkdir(exist_ok=True)
@@ -58,7 +61,8 @@ def main() -> None:
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
     print(
-        f"Local console: http://{settings.host}:{settings.port}; admin token file: {token_file}",
+        f"Local console: http://{settings.host}:{settings.port}; admin token: "
+        + ("RESONANCE_ADMIN_TOKEN" if settings.admin_token else f"file {token_file}"),
         flush=True,
     )
     try:

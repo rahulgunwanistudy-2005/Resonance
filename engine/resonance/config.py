@@ -11,6 +11,25 @@ def process_environment(overrides: dict[str, str]) -> dict[str, str]:
     return {**os.environ, **overrides}
 
 
+def load_env_file(path: Path = Path(".env")) -> list[str]:
+    """Load KEY=VALUE lines into the process environment; existing variables win."""
+    if not path.is_file():
+        return []
+    loaded = []
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.removeprefix("export ").split("=", 1)
+        key, value = key.strip(), value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+            value = value[1:-1]
+        if key and key not in os.environ:
+            os.environ[key] = value
+            loaded.append(key)
+    return loaded
+
+
 class Settings(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     data_dir: Path = Path("data")

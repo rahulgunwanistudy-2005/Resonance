@@ -1,13 +1,25 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, json } from "../api";
-import type { Roi, Bridge } from "../types";
+import type { Roi, Bridge, Health } from "../types";
+// Mirrors MeasurementConfig limits so a clip is rejected before it is uploaded.
+const LIMITS = {
+  durationSeconds: 60,
+  framePixels: 3840 * 2160,
+  roiPixels: 512 * 512,
+  rois: 8,
+};
 export function Upload({
   onComplete,
 }: {
   onComplete: (bridge: string, capture: string) => void;
 }) {
   const [existing, setExisting] = useState("");
+  const health = useQuery({
+    queryKey: ["health"],
+    queryFn: () => api<Health>("/health"),
+  });
+  const stabilizationReady = health.data?.stabilization_ready ?? false;
   const bridges = useQuery({
     queryKey: ["bridges"],
     queryFn: () => api<Bridge[]>("/bridges"),
@@ -15,13 +27,51 @@ export function Upload({
   const [file, setFile] = useState<File | null>(null),
     [url, setUrl] = useState(""),
     [dimensions, setDimensions] = useState({ width: 384, height: 256 });
-  const [roi, setRoi] = useState<Roi>({
-    id: "deck",
-    x: 128,
-    y: 96,
-    width: 96,
-    height: 64,
-  });
+  const [rois, setRois] = useState<Roi[]>([
+    { id: "deck", x: 128, y: 96, width: 96, height: 64 },
+  ]);
+  const [active, setActive] = useState(0),
+    [duration, setDuration] = useState(0);
+  const named = useRef(1);
+  const roi = rois[Math.min(active, rois.length - 1)];
+  const setRoi = (next: Roi) =>
+    setRois((old) =>
+      old.map((item, i) => (i === active ? { ...next, id: item.id } : item)),
+    );
+  function addRegion() {
+    named.current += 1;
+    const next = {
+      ...roi,
+      id: `region-${named.current}`,
+      x: Math.max(
+        0,
+        Math.min(dimensions.width - roi.width, roi.x + roi.width + 8),
+      ),
+    };
+    setRois((old) => [...old, next]);
+    setActive(rois.length);
+    setMode("roi");
+  }
+  function removeRegion() {
+    setRois((old) => old.filter((_, i) => i !== active));
+    setActive(0);
+  }
+  function limitError(): string | null {
+    if (duration > LIMITS.durationSeconds)
+      return `This clip runs longer than ${LIMITS.durationSeconds} seconds. Trim it before measuring.`;
+    if (dimensions.width * dimensions.height > LIMITS.framePixels)
+      return "The video resolution is above 4K. Export a smaller version before measuring.";
+    for (const item of rois) {
+      if (item.width * item.height > LIMITS.roiPixels)
+        return `Region ${item.id} is too large; keep each region within 512 by 512 in video coordinates.`;
+      if (
+        item.x + item.width > dimensions.width ||
+        item.y + item.height > dimensions.height
+      )
+        return `Region ${item.id} extends outside the video frame.`;
+    }
+    return null;
+  }
   const [points, setPoints] = useState<[number, number][]>([]),
     [length, setLength] = useState(""),
     [fps, setFps] = useState("60"),
@@ -30,7 +80,12 @@ export function Upload({
     [temperature, setTemperature] = useState("");
   const [confirmed, setConfirmed] = useState(false),
     [name, setName] = useState("New camera measurement"),
-    [mode, setMode] = useState<"roi" | "scale">("roi"),
+    [spanType, setSpanType] =
+      useState<Bridge["bridge"]["span_type"]>("unknown"),
+    [spanLength, setSpanLength] = useState(""),
+    [mode, setMode] = useState<"roi" | "scale" | "structure">("roi"),
+    [stabilize, setStabilize] = useState(false),
+    [structure, setStructure] = useState<Roi | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [progress, setProgress] = useState("");
@@ -69,6 +124,17 @@ export function Upload({
       setError("Choose a video and confirm the camera acquisition frame rate.");
       return;
     }
+    const limit = limitError();
+    if (limit) {
+      setError(limit);
+      return;
+    }
+    if (stabilize && !structure) {
+      setError(
+        "Draw a structure box around the whole moving structure, or turn off stabilization.",
+      );
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -94,8 +160,10 @@ export function Upload({
             method: "POST",
             body: json({
               name,
+              span_type: spanType,
+              span_length_m: spanLength === "" ? null : Number(spanLength),
               band: { low_hz: Number(low), high_hz: Number(high) },
-              rois: [roi],
+              rois,
               calibration,
             }),
           });
@@ -109,10 +177,12 @@ export function Upload({
         method: "POST",
         body: json({
           bridge_id: bridge.bridge.id,
-          rois: [roi],
+          rois,
           calibration,
           acquisition_fps: Number(fps),
           acquisition_fps_verified: confirmed,
+          stabilize,
+          structure_box: stabilize ? structure : null,
           temperature_c: temperature === "" ? null : Number(temperature),
         }),
       });
@@ -165,13 +235,19 @@ export function Upload({
                 onLoadedMetadata={(e) => {
                   const v = e.currentTarget;
                   setDimensions({ width: v.videoWidth, height: v.videoHeight });
-                  setRoi({
-                    id: "deck",
-                    x: Math.round(v.videoWidth * 0.4),
-                    y: Math.round(v.videoHeight * 0.4),
-                    width: Math.min(128, Math.round(v.videoWidth * 0.2)),
-                    height: Math.min(96, Math.round(v.videoHeight * 0.2)),
-                  });
+                  setDuration(v.duration);
+                  setStructure(null);
+                  named.current = 1;
+                  setActive(0);
+                  setRois([
+                    {
+                      id: "deck",
+                      x: Math.round(v.videoWidth * 0.4),
+                      y: Math.round(v.videoHeight * 0.4),
+                      width: Math.min(128, Math.round(v.videoWidth * 0.2)),
+                      height: Math.min(96, Math.round(v.videoHeight * 0.2)),
+                    },
+                  ]);
                 }}
               />
               <svg
@@ -187,8 +263,8 @@ export function Upload({
                     setPoints((old) => (old.length >= 2 ? [p] : [...old, p]));
                   } else if (start.current) {
                     const [x, y] = start.current;
-                    setRoi({
-                      id: "deck",
+                    (mode === "structure" ? setStructure : setRoi)({
+                      id: mode === "structure" ? "structure" : "deck",
                       x: Math.max(0, Math.min(x, p[0])),
                       y: Math.max(0, Math.min(y, p[1])),
                       width: Math.max(16, Math.abs(x - p[0])),
@@ -198,13 +274,34 @@ export function Upload({
                   start.current = null;
                 }}
               >
-                <rect
-                  x={roi.x}
-                  y={roi.y}
-                  width={roi.width}
-                  height={roi.height}
-                  className="roi"
-                />
+                {rois.map((item, i) => (
+                  <g key={item.id}>
+                    <rect
+                      x={item.x}
+                      y={item.y}
+                      width={item.width}
+                      height={item.height}
+                      className={"roi" + (i === active ? " active" : "")}
+                    />
+                    <text
+                      x={item.x + 4}
+                      y={item.y - 6}
+                      className="roi-label"
+                      fontSize={Math.max(10, dimensions.width / 40)}
+                    >
+                      {item.id}
+                    </text>
+                  </g>
+                ))}
+                {stabilize && structure && (
+                  <rect
+                    x={structure.x}
+                    y={structure.y}
+                    width={structure.width}
+                    height={structure.height}
+                    className="structure-box"
+                  />
+                )}
                 {points.map((p, i) => (
                   <circle
                     key={i}
@@ -243,9 +340,54 @@ export function Upload({
               >
                 Select scale points
               </button>
+              {stabilize && (
+                <button
+                  type="button"
+                  className="quiet"
+                  aria-pressed={mode === "structure"}
+                  onClick={() => setMode("structure")}
+                >
+                  Draw structure box
+                </button>
+              )}
+            </div>
+            <div
+              className="toolbar"
+              role="group"
+              aria-label="Measurement regions"
+            >
+              {rois.map((item, i) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="quiet"
+                  aria-pressed={i === active}
+                  onClick={() => {
+                    setActive(i);
+                    setMode("roi");
+                  }}
+                >
+                  {item.id}
+                </button>
+              ))}
+              <button
+                type="button"
+                className="quiet"
+                onClick={addRegion}
+                disabled={rois.length >= LIMITS.rois}
+              >
+                Add region
+              </button>
+              {rois.length > 1 && (
+                <button type="button" className="quiet" onClick={removeRegion}>
+                  Remove {roi.id}
+                </button>
+              )}
             </div>
             <p className="help">
-              Drag to set a region, or use the coordinate fields. Scale mode
+              Drag to set the selected region, or use the coordinate fields.
+              Every region is measured; two or more along the span give a mode
+              shape, and regions without usable texture are dropped. Scale mode
               uses two clicks. Video controls remain below the selection
               overlay.
             </p>
@@ -308,6 +450,33 @@ export function Upload({
             maxLength={160}
           />
         </label>
+        {!existing && (
+          <div className="field-pair">
+            <label>
+              Span type
+              <select
+                value={spanType}
+                onChange={(e) =>
+                  setSpanType(e.target.value as Bridge["bridge"]["span_type"])
+                }
+              >
+                <option value="unknown">Unknown</option>
+                <option value="simply_supported">Simply supported</option>
+                <option value="cantilever">Cantilever</option>
+              </select>
+            </label>
+            <label>
+              Span length (m, optional)
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={spanLength}
+                onChange={(e) => setSpanLength(e.target.value)}
+              />
+            </label>
+          </div>
+        )}
         <div className="field-pair">
           <label>
             Lower band (Hz)
@@ -354,6 +523,30 @@ export function Upload({
           I confirmed the camera acquisition rate, including slow-motion
           settings.
         </label>
+        <label className="checkbox">
+          <input
+            type="checkbox"
+            checked={stabilize}
+            disabled={!stabilizationReady}
+            onChange={(e) => {
+              setStabilize(e.target.checked);
+              if (!e.target.checked && mode === "structure") setMode("roi");
+            }}
+          />
+          Hand-held camera: cancel camera motion against the background.
+        </label>
+        {!stabilizationReady ? (
+          <p className="help">
+            Stabilization is unavailable: the ALIKED and LightGlue weights are
+            not installed. Run <code>make models</code> and set their paths in{" "}
+            <code>.env</code>, then restart.
+          </p>
+        ) : stabilize ? (
+          <p className="help">
+            Draw a box covering the entire moving structure so it is excluded
+            from background tracking.
+          </p>
+        ) : null}
         <label>
           Recording temperature (°C, optional)
           <input
@@ -365,7 +558,7 @@ export function Upload({
           />
         </label>
         <fieldset>
-          <legend>Region coordinates</legend>
+          <legend>Region coordinates: {roi.id}</legend>
           <div className="field-pair">
             {(["x", "y", "width", "height"] as const).map((key) => (
               <label key={key}>
