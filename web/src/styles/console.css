@@ -298,7 +298,6 @@ footer strong {
 /* Shared surfaces */
 .panel,
 .form-panel,
-.chart,
 .baseline-form,
 .history,
 .ticket {
@@ -867,9 +866,6 @@ legend {
 }
 .reading small {
   font-size: 18px;
-}
-.reading.small {
-  font-size: 22px;
 }
 .reading.coral {
   color: var(--coral);

@@ -116,7 +116,7 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
             </div>
           </div>
         </div>
-        <ul className="hero-principles" id="technology">
+        <ul className="hero-principles">
           <li>
             <strong>Evidence before a verdict</strong>
             <span>
@@ -251,12 +251,6 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
           </section>
           <section className="panel" aria-labelledby="listen-title">
             <h3 id="listen-title">Listen</h3>
-            <p className="reading-label">Measured dominant frequency</p>
-            <p className="reading small">
-              {estimate?.spectrum
-                ? estimate.spectrum.peak_hz.toFixed(3) + " Hz"
-                : "Awaiting generated demonstration"}
-            </p>
             {record?.artifacts.includes("motion.wav") && (
               <label className="listen-label">
                 Listen to measured motion, time-compressed and looped
