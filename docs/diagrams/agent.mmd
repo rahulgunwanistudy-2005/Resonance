@@ -1,0 +1,20 @@
+flowchart LR
+ Observe[Observe video quality] --> Good{Usable region?}
+ Good -- No --> Adapt[Switch ROI or defer]
+ Adapt --> Good
+ Good -- Yes --> Trigger[Operator upload or validated camera excitation]
+ Trigger --> Measure[Execute OpenCV measurement]
+ Measure --> Assess{Evidence sufficient?}
+ Assess -- No --> Retry[Change window, method or ROIs]
+ Retry --> Limit{Retry budget remains?}
+ Limit -- Yes --> Measure
+ Limit -- No --> Insufficient[Insufficient evidence]
+ Assess -- Yes --> Baseline{Healthy baseline and temperature?}
+ Baseline -- No --> Insufficient
+ Baseline -- Yes --> Compare[Prediction interval comparison]
+ Compare --> Normal[No change detected]
+ Compare --> Watch[Watch and raised sampling request]
+ Compare --> Alert[Confirmed drop requests approval]
+ Alert --> Human{Human review}
+ Human -- Approve --> Act[Delivery outbox]
+ Human -- Reject --> Reject[Reason retained, no delivery]

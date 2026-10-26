@@ -1,7 +1,7 @@
 {
   "kind": "synthetic_agent_replay",
-  "git_revision": "3365968ea169140eefc3df24935ac10b018b9dac",
-  "source_tree_sha256": "c9005412024f34292e8f601401cc67d22e6dadfe0a9ceab110f643c1b5f85cac",
+  "git_revision": "6d91a6658045171a0dca34338da5349ad82b48bc",
+  "source_tree_sha256": "31a35536112a882f62a48579fe4603012250e9f4002f47e764a89cb98a9b815b",
   "baseline": {
     "bridge_id": "synthetic-agent",
     "f0_hz": 8.000020842689677,

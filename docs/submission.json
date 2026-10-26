@@ -1,0 +1,15 @@
+{
+  "repository_url": "https://github.com/rahulgunwanistudy-2005/Resonance",
+  "public_endpoint": null,
+  "video_url": null,
+  "status": "local application verified; recording and cloud gates pending",
+  "team": "Rahul",
+  "claims": {
+    "desk_ground_truth": false,
+    "field_validation": false,
+    "cool_execution": false,
+    "aws_deployment": false
+  },
+  "repository_contents_published": false,
+  "publication_status": "Awaiting explicit approval to publish committed source, report and measured evidence to this public repository"
+}

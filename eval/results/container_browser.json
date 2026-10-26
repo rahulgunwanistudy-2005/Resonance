@@ -1,0 +1,102 @@
+{
+  "base_url": "http://127.0.0.1:8001",
+  "checks": [
+    {
+      "route": "home",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "console",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "measure",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "fleet",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "agent",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "bench",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "methods",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "home",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "console",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "measure",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "fleet",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "agent",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "bench",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "route": "methods",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "scenario": "native_websocket_snapshot",
+      "success": true
+    },
+    {
+      "scenario": "protected_healthy_baseline",
+      "success": true
+    },
+    {
+      "scenario": "human_review_to_local_receipt",
+      "success": true
+    },
+    {
+      "scenario": "upload_to_worker_to_result",
+      "success": true
+    },
+    {
+      "scenario": "repeated_trial_on_existing_bridge",
+      "success": true
+    }
+  ],
+  "page_errors": [],
+  "summary": {
+    "routes_checked": 14,
+    "overflow_failures": 0,
+    "page_errors": 0,
+    "upload_flow_passed": true
+  }
+}

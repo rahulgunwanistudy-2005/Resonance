@@ -1,0 +1,129 @@
+{
+  "kind": "measured_local_stabilization_refresh_tradeoff",
+  "repeats_per_setting": 1,
+  "rows": [
+    {
+      "kind": "synthetic_camera_shake",
+      "seed": 42,
+      "git_revision": "6d91a6658045171a0dca34338da5349ad82b48bc",
+      "source_tree_sha256": "31a35536112a882f62a48579fe4603012250e9f4002f47e764a89cb98a9b815b",
+      "input_sha256": "def77c7cce4991577f65a6d8f6d27e34ce65155cd9fee12406dd5f7fb56ee0da",
+      "provenance": {
+        "cv2_version": "5.0.0",
+        "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",
+        "build_info_sha": "ca056069608fa981f74a01de3ba432a4d0395d8eb8de2bcbbc279f3cc02ce46d",
+        "machine": "arm64",
+        "instance_type": null,
+        "ami_id": null,
+        "cool_verified": false
+      },
+      "fps": 60,
+      "frames": 240,
+      "configuration": {
+        "displacement_rms_px": 0.5,
+        "frequency_hz": 7.1,
+        "camera_translation_rms_px": 2,
+        "refresh_frames": 1
+      },
+      "model_sha256": {
+        "aliked-n16rot-top1k-640.onnx": "b46868de0794ea0f2d878985d99dc17d3639dfab85d852994254a4cdf0cdc0ea",
+        "aliked_lightglue.onnx": "a1bd99d294c4c6c08ca978af3128c85f8c0e603b04a03e4391428455d9624439"
+      },
+      "processing_seconds": 675.4146012499987,
+      "processing_fps": 0.35533729883219706,
+      "raw_rmse_px": 1.9889127046493011,
+      "stabilized_rmse_px": 0.09106332703787196,
+      "benefit_observed": true,
+      "limitations": [
+        "Synthetic planar camera motion only",
+        "No real handheld clip in this run",
+        "Timing includes generated scene transforms and stabilization; one exploratory repeat",
+        "No amplitude-accuracy claim"
+      ]
+    },
+    {
+      "kind": "synthetic_camera_shake",
+      "seed": 42,
+      "git_revision": "6d91a6658045171a0dca34338da5349ad82b48bc",
+      "source_tree_sha256": "31a35536112a882f62a48579fe4603012250e9f4002f47e764a89cb98a9b815b",
+      "input_sha256": "def77c7cce4991577f65a6d8f6d27e34ce65155cd9fee12406dd5f7fb56ee0da",
+      "provenance": {
+        "cv2_version": "5.0.0",
+        "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",
+        "build_info_sha": "ca056069608fa981f74a01de3ba432a4d0395d8eb8de2bcbbc279f3cc02ce46d",
+        "machine": "arm64",
+        "instance_type": null,
+        "ami_id": null,
+        "cool_verified": false
+      },
+      "fps": 60,
+      "frames": 240,
+      "configuration": {
+        "displacement_rms_px": 0.5,
+        "frequency_hz": 7.1,
+        "camera_translation_rms_px": 2,
+        "refresh_frames": 10
+      },
+      "model_sha256": {
+        "aliked-n16rot-top1k-640.onnx": "b46868de0794ea0f2d878985d99dc17d3639dfab85d852994254a4cdf0cdc0ea",
+        "aliked_lightglue.onnx": "a1bd99d294c4c6c08ca978af3128c85f8c0e603b04a03e4391428455d9624439"
+      },
+      "processing_seconds": 68.06463049999729,
+      "processing_fps": 3.5260604257597423,
+      "raw_rmse_px": 1.9889127046493011,
+      "stabilized_rmse_px": 0.09081192396156199,
+      "benefit_observed": true,
+      "limitations": [
+        "Synthetic planar camera motion only",
+        "No real handheld clip in this run",
+        "Timing includes generated scene transforms and stabilization; one exploratory repeat",
+        "No amplitude-accuracy claim"
+      ]
+    },
+    {
+      "kind": "synthetic_camera_shake",
+      "seed": 42,
+      "git_revision": "6d91a6658045171a0dca34338da5349ad82b48bc",
+      "source_tree_sha256": "f5a156dd87801369298f91a963ce9afd7e883f9828755bc11df97fdeaf747bf9",
+      "input_sha256": "def77c7cce4991577f65a6d8f6d27e34ce65155cd9fee12406dd5f7fb56ee0da",
+      "provenance": {
+        "cv2_version": "5.0.0",
+        "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",
+        "build_info_sha": "ca056069608fa981f74a01de3ba432a4d0395d8eb8de2bcbbc279f3cc02ce46d",
+        "machine": "arm64",
+        "instance_type": null,
+        "ami_id": null,
+        "cool_verified": false
+      },
+      "fps": 60,
+      "frames": 240,
+      "configuration": {
+        "displacement_rms_px": 0.5,
+        "frequency_hz": 7.1,
+        "camera_translation_rms_px": 2,
+        "refresh_frames": 30
+      },
+      "model_sha256": {
+        "aliked-n16rot-top1k-640.onnx": "b46868de0794ea0f2d878985d99dc17d3639dfab85d852994254a4cdf0cdc0ea",
+        "aliked_lightglue.onnx": "a1bd99d294c4c6c08ca978af3128c85f8c0e603b04a03e4391428455d9624439"
+      },
+      "processing_seconds": 20.278220583000802,
+      "processing_fps": 11.83535798999995,
+      "raw_rmse_px": 1.9889127046493011,
+      "stabilized_rmse_px": 0.09098043518886555,
+      "benefit_observed": true,
+      "limitations": [
+        "Synthetic planar camera motion only",
+        "No real handheld clip in this run",
+        "Timing includes generated scene transforms and stabilization; one exploratory repeat",
+        "No amplitude-accuracy claim"
+      ]
+    }
+  ],
+  "limitations": [
+    "Exploratory single timing per setting, without a timing confidence interval",
+    "Identical synthetic scene and model files; not real handheld validation",
+    "Timing includes scene generation and full-frame stabilization; not per-ROI inference latency",
+    "Local host only; no cloud or COOL speed claim"
+  ]
+}

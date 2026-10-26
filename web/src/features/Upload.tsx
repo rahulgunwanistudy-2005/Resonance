@@ -269,6 +269,7 @@ export function Upload({
         <label>
           Record for
           <select
+            aria-label="Record for"
             value={existing}
             onChange={(e) => {
               setExisting(e.target.value);

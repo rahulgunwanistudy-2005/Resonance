@@ -1,0 +1,20 @@
+flowchart TD
+ Camera[Private configured camera monitor] --> Local
+ Browser[Browser console] --> API[FastAPI and bounded upload tickets]
+ API --> Local[Local SQLite documents and durable jobs]
+ Local --> Worker[Separate measurement worker]
+ Worker --> Vision[OpenCV 5 stabilization and displacement]
+ Vision --> Signal[Welch spectrum and conditional interval]
+ Signal --> Agent[Deterministic agent and baseline comparison]
+ Agent --> Evidence[Trace, plots and audified displacement]
+ Agent --> Human[Human approval with retained reason]
+ Human --> Receipt[Local delivery receipt]
+ subgraph Prepared[Prepared AWS target - not deployed]
+ Edge[CloudFront and private S3 web] --> Compute[COOL Graviton EC2]
+ Raw[S3 raw uploads with lifecycle] --> Queue[SQS and dead-letter queue]
+ Queue --> Compute
+ Compute --> Records[DynamoDB and evidence S3]
+ Records --> Gate[Human-approved SNS notification]
+ Guard[Budgets, CloudWatch and scheduled stop]
+ end
+ API -. deployment boundary .-> Edge

@@ -1,0 +1,172 @@
+{
+  "kind": "measured_local_benchmark",
+  "label": "local",
+  "git_revision": "6d91a6658045171a0dca34338da5349ad82b48bc",
+  "source_tree_sha256": "31a35536112a882f62a48579fe4603012250e9f4002f47e764a89cb98a9b815b",
+  "provenance": {
+    "cv2_version": "5.0.0",
+    "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",
+    "build_info_sha": "ca056069608fa981f74a01de3ba432a4d0395d8eb8de2bcbbc279f3cc02ce46d",
+    "machine": "arm64",
+    "instance_type": null,
+    "ami_id": null,
+    "cool_verified": false
+  },
+  "seed": 42,
+  "warmup_runs": 3,
+  "pipeline_input_sha256": "cae4d22b8898eb1e9dec16a795e587e68b790ea397cfdcfd07c65a38415a2914",
+  "workloads": [
+    {
+      "name": "cvtColor",
+      "mean_ms": 0.21340333337623935,
+      "ci95_ms": 0.038610422246567626,
+      "repeats_ms": [
+        0.18149166668687639,
+        0.25943749982009956,
+        0.22700276676914655,
+        0.2085166668014911,
+        0.19056806680358326
+      ],
+      "p50_ms": 0.1680210007179994,
+      "p95_ms": 0.45521670217567567,
+      "process_cpu_percent": 85.33228863576484,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "resize",
+      "mean_ms": 0.21839193335229842,
+      "ci95_ms": 0.11118542669129582,
+      "repeats_ms": [
+        0.16833886669094986,
+        0.17053470000973903,
+        0.14008333334156003,
+        0.2534958335066525,
+        0.3595069332125907
+      ],
+      "p50_ms": 0.1695829996606335,
+      "p95_ms": 0.391599848808254,
+      "process_cpu_percent": 143.36779620316744,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "GaussianBlur",
+      "mean_ms": 1.553995280022112,
+      "ci95_ms": 0.27384812888800764,
+      "repeats_ms": [
+        1.6204111331414122,
+        1.8004833334998693,
+        1.3451652666844893,
+        1.7024263999095033,
+        1.3014902668752861
+      ],
+      "p50_ms": 1.136728998972103,
+      "p95_ms": 4.335181248825389,
+      "process_cpu_percent": 63.88072078038321,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "pyrDown",
+      "mean_ms": 0.2938477799762041,
+      "ci95_ms": 0.09352470297387676,
+      "repeats_ms": [
+        0.26843333325814456,
+        0.4206208332713383,
+        0.24560973348949727,
+        0.3007430665699455,
+        0.23383193329209462
+      ],
+      "p50_ms": 0.22437499865191057,
+      "p95_ms": 0.6047662987839428,
+      "process_cpu_percent": 112.35677932029148,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "filter2D",
+      "mean_ms": 1.814436659963879,
+      "ci95_ms": 1.4394536759945025,
+      "repeats_ms": [
+        3.864273599901935,
+        1.5304166665979817,
+        1.4041375000185023,
+        1.1927680333125559,
+        1.0805874999884204
+      ],
+      "p50_ms": 1.2909585020679515,
+      "p95_ms": 4.111445502712736,
+      "process_cpu_percent": 72.12615125023245,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "phaseCorrelate",
+      "mean_ms": 22.72495000002285,
+      "ci95_ms": 5.068605640952533,
+      "repeats_ms": [
+        28.07605000004211,
+        22.689145833525497,
+        24.498224999842932,
+        21.388652766715193,
+        16.97267639998851
+      ],
+      "p50_ms": 17.644895997364074,
+      "p95_ms": 39.619931250854265,
+      "process_cpu_percent": 62.326227160849115,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "findHomography",
+      "mean_ms": 0.444304159997652,
+      "ci95_ms": 0.12017133514852331,
+      "repeats_ms": [
+        0.4276375000093443,
+        0.4894110999885016,
+        0.30631109984824434,
+        0.5701860999882531,
+        0.4279750001539166
+      ],
+      "p50_ms": 0.3326875012135133,
+      "p95_ms": 0.7306956515094497,
+      "process_cpu_percent": 75.18206881154974,
+      "iterations_per_repeat": 30,
+      "processing_fps": null,
+      "real_time_factor": null
+    },
+    {
+      "name": "measurement_pipeline",
+      "mean_ms": 1439.1557248003664,
+      "ci95_ms": 376.6286161778316,
+      "repeats_ms": [
+        1349.9791249996633,
+        1254.3208330025664,
+        1557.0949579996523,
+        1130.0093329991796,
+        1904.3743750007707
+      ],
+      "p50_ms": 1349.9609170030453,
+      "p95_ms": 1834.887941199122,
+      "process_cpu_percent": 69.96633430866356,
+      "iterations_per_repeat": 1,
+      "processing_fps": 333.5288820579744,
+      "real_time_factor": 5.55881470096624
+    }
+  ],
+  "usd_per_camera_hour": null,
+  "price_source": null,
+  "cloud_capacity": null,
+  "limitations": [
+    "Local runs do not establish cloud speed or cost",
+    "Pipeline timing is whole-job latency, not individual frame latency",
+    "Process CPU percent can exceed one logical core; it is not system utilization"
+  ]
+}

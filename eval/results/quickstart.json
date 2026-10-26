@@ -1,0 +1,17 @@
+{
+  "kind": "executed_clean_container_quickstart",
+  "verified": true,
+  "source_tree_sha256": "f5a156dd87801369298f91a963ce9afd7e883f9828755bc11df97fdeaf747bf9",
+  "application_source_sha256": "c0acfa27b051d104002965a389c40d7e6c44784fbdb31b6c13343ffae54bc8de",
+  "image_id": "sha256:d9ac87e17af9467a5ac2c21837dedfef12b66c7467dbf497a08c602f68726b48",
+  "architecture": "arm64",
+  "build_seconds": 40.371301042003324,
+  "build_and_seed_to_ready_seconds": 98.24559166700055,
+  "build_seed_and_browser_seconds": 116.99876437500643,
+  "browser_results": "eval/results/container_browser.json",
+  "conditions": [
+    "Fresh application container with no copied outputs, weights, private inputs or credentials",
+    "Docker base images and dependency build layers may be cached; this is not a cold-network installation claim",
+    "Local pip OpenCV runtime; no AWS or COOL execution"
+  ]
+}

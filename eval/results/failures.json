@@ -1,7 +1,7 @@
 {
   "kind": "synthetic_failure_scenarios",
-  "git_revision": "1a545822408ee75e4dc4e812d058f87f30a3094b",
-  "source_tree_sha256": "80bea44e9c6fc9775736b1b7b707246942e5c0d0b3665c2a360597b3b445152e",
+  "git_revision": "5f28ebe14a27df74e990d55413bffa99bdbd4fdd",
+  "source_tree_sha256": "31a35536112a882f62a48579fe4603012250e9f4002f47e764a89cb98a9b815b",
   "provenance": {
     "cv2_version": "5.0.0",
     "cv2_path": "/Users/rahul/Resonance/.venv/lib/python3.12/site-packages/cv2/__init__.py",

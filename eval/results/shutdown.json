@@ -1,0 +1,6 @@
+{
+  "kind": "native_websocket_shutdown_check",
+  "initial_snapshot_received": true,
+  "close_code": 1012,
+  "closed_within_timeout": true
+}

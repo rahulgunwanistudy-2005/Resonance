@@ -1,8 +1,8 @@
 {
   "kind": "synthetic_camera_shake",
   "seed": 42,
-  "git_revision": "8cf6a876d62ad5c9fd3df427432a999d626c57fb",
-  "source_tree_sha256": "09dc4101f78c38c23e7a018d5fe59b5b2eb500ee6b84b67d8edf960e0c038666",
+  "git_revision": "6d91a6658045171a0dca34338da5349ad82b48bc",
+  "source_tree_sha256": "f5a156dd87801369298f91a963ce9afd7e883f9828755bc11df97fdeaf747bf9",
   "input_sha256": "def77c7cce4991577f65a6d8f6d27e34ce65155cd9fee12406dd5f7fb56ee0da",
   "provenance": {
     "cv2_version": "5.0.0",
@@ -25,12 +25,15 @@
     "aliked-n16rot-top1k-640.onnx": "b46868de0794ea0f2d878985d99dc17d3639dfab85d852994254a4cdf0cdc0ea",
     "aliked_lightglue.onnx": "a1bd99d294c4c6c08ca978af3128c85f8c0e603b04a03e4391428455d9624439"
   },
+  "processing_seconds": 20.278220583000802,
+  "processing_fps": 11.83535798999995,
   "raw_rmse_px": 1.9889127046493011,
   "stabilized_rmse_px": 0.09098043518886555,
   "benefit_observed": true,
   "limitations": [
     "Synthetic planar camera motion only",
     "No real handheld clip in this run",
-    "No inference speed or amplitude-accuracy claim"
+    "Timing includes generated scene transforms and stabilization; one exploratory repeat",
+    "No amplitude-accuracy claim"
   ]
 }

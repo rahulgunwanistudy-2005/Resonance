@@ -105,6 +105,37 @@ def main() -> None:
         )
         page.screenshot(path=str(output / "upload-result.png"), full_page=True)
         rows.append({"scenario": "upload_to_worker_to_result", "success": True})
+        bridges = page.request.get(base + "/api/bridges").json()
+        bridge = next(
+            item
+            for item in bridges
+            if not item["synthetic"]
+            and item["bridge"]["name"] == "Browser verification capture"
+        )
+        page.goto(base + "/#/measure", wait_until="networkidle")
+        page.get_by_label("Record for", exact=True).select_option(
+            bridge["bridge"]["id"]
+        )
+        assert page.get_by_label("Bridge or experiment name").is_disabled()
+        page.get_by_label("Choose a video").set_input_files(
+            "outputs/uploads/demo-capture-4.webm"
+        )
+        page.wait_for_function('document.querySelector("video")?.videoWidth>0')
+        page.get_by_label(
+            "I confirmed the camera acquisition rate, including slow-motion settings."
+        ).check()
+        with page.expect_response(
+            lambda response: response.url.endswith("/api/captures")
+            and response.request.method == "POST"
+        ) as uploaded:
+            page.get_by_role("button", name="Run measurement", exact=True).click()
+        repeated_id = uploaded.value.json()["capture_id"]
+        page.get_by_text("Dominant frequency", exact=True).wait_for(timeout=120000)
+        repeated = page.request.get(base + "/api/captures/" + repeated_id).json()
+        assert repeated["capture"]["bridge_id"] == bridge["bridge"]["id"]
+        assert repeated["result"]["estimate"]["outcome"] == "MEASURED"
+        rows.append({"scenario": "repeated_trial_on_existing_bridge", "success": True})
+
         browser.close()
     args.output.write_text(
         json.dumps(
