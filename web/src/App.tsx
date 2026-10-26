@@ -101,13 +101,18 @@ export default function App() {
     addEventListener("hashchange", change);
     return () => removeEventListener("hashchange", change);
   }, []);
+  // Each query loads only on the tabs that show it; the largest payloads
+  // (evaluation evidence, capture history) are skipped everywhere else.
+  const on = (...routes: string[]) => routes.includes(route);
   const bridges = useQuery({
     queryKey: ["bridges"],
     queryFn: () => api<Bridge[]>("/bridges"),
+    enabled: on("console", "fleet"),
   });
   const history = useQuery({
     queryKey: ["history", bridgeId],
     queryFn: () => api<CaptureRecord[]>(`/bridges/${bridgeId}/history`),
+    enabled: on("console", "agent"),
   });
   // The live socket pushes history changes; reconnect if the API restarts.
   useEffect(() => {
@@ -148,11 +153,13 @@ export default function App() {
   const approvals = useQuery({
     queryKey: ["approvals"],
     queryFn: () => api<Approval[]>("/approvals"),
-    refetchInterval: 3000,
+    enabled: on("fleet", "agent"),
+    refetchInterval: on("fleet", "agent") ? 3000 : false,
   });
   const evaluation = useQuery({
     queryKey: ["eval"],
     queryFn: () => api<Evidence>("/eval"),
+    enabled: on("methods", "desk"),
   });
   const health = useQuery({
     queryKey: ["health"],
@@ -162,6 +169,7 @@ export default function App() {
   const benches = useQuery({
     queryKey: ["bench"],
     queryFn: () => api<Evidence>("/bench"),
+    enabled: on("bench"),
   });
   const record = captureId ? selected.data : history.data?.[0];
   const estimate = record?.result?.estimate;
