@@ -12,3 +12,13 @@ models
 web/dist
 .env
 original-vs-actual-tv.png
+.env.*
+.aws
+.ssh
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite*
+*.db
+*.log

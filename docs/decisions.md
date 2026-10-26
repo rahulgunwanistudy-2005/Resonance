@@ -2,15 +2,7 @@
 
 ## 2026-10-24 — Complete the local path while external inputs wait
 
-Rahul explicitly deferred AWS access and confirmed desk recordings are unavailable. Continue with all independent implementation and verification. Use SQLite for the local durable job queue, measurements and approval outbox; retain separate API/worker processes and cloud adapters so the local demo exercises actual persistence and measurements. Label the local transport and generated inputs. Do not claim cloud/COOL/desk execution, provision paid resources, or ask for AWS again until deployment is otherwise ready.
-
-## 2026-10-23 — Workflow and scope
-
-Use the supplied engineering-workflow gates and frontend-design skill. The build prompt already authorizes the architecture and phase plan, overriding the skill's generic plan-confirmation step. Start with P0 and continue to P1 when the required runtime is available. Scaffolded, unavailable modules must fail explicitly and remain absent from the UI.
-
-## 2026-10-23 — Deadline ambiguity
-
-The prompt's calendar dates and weekday names disagree. Use the conservative provisional internal target 2026-10-26 08:00 IST until the official competition deadline is verified. Do not silently promise the later date.
+AWS access and desk recordings are unavailable for the local build. SQLite persists local jobs, measurements and the approval outbox. API and worker remain separate processes, with cloud adapters prepared for later integration. Generated inputs and the local transport are explicitly labeled; cloud, COOL and real-data validation remain separate pending gates.
 
 ## 2026-10-23 — Evidence discipline
 
@@ -36,11 +28,6 @@ Require a separate box covering the entire moving structure, rather than treatin
 
 Use the existing Apache-licensed OpenCV Zoo YOLOX export rather than bringing a training framework into the project. Heavy vehicle absence is debounced; the motion-energy fallback is labeled separately and never described as vehicle detection. Blank-frame inference and trigger unit tests do not establish semantic vehicle performance. Keep the P2 real-clip gate open until an actual vehicle clip is evaluated.
 
-## 2026-10-23 — Checkpoint commits
-
-The first P1 Git permission review timed out without a safety finding. Retried once with explicit file paths and saved the verified phase commit. No publication or cloud changes occurred.
-
-
 ## 2026-10-26 — Bounded ROI pool and measured default
 
 Per-region extraction can run in a spawned process pool with bounded worker count and one OpenCV thread per child. Identical inputs preserve the numerical result. The measured startup/serialization-inclusive comparison is `bench/results/roi_pool.json`; its intervals overlap and the pool did not improve the mean on this local run. Keep serial extraction as the default and make parallelism explicit in `MeasurementConfig.roi_workers`. Do not infer Graviton behavior from this host. The workload includes extraction, spectra, FDD and bootstrap, rather than attributing the entire time to process startup.
@@ -51,13 +38,8 @@ Attempted py-spy on the owned generated benchmark process. macOS reported that r
 
 The private camera-watch runner reads files/RTSP/HLS through OpenCV and requires independently confirmed acquisition fps plus strictly increasing decoder timestamps. It observes actual scene quality and debounced heavy-vehicle exit when verified YOLOX weights are configured, otherwise an explicitly labeled motion-energy exit. It records the subsequent bounded window, rejects timing gaps, and submits through the same durable queue. WATCH changes the configured monitor's observation cadence; absent cameras remain inactive. Generated stream tests validate the trigger-to-record-to-measure path and refusal on a dropped frame. Real camera/network/semantic vehicle performance remains unverified.
 
-
 ## 2026-10-26 — Confirmation intervals and graceful live shutdown
 
 Historical confirmations must satisfy the same uncertainty separation used for a current drop: the full measured interval must sit below the healthy prediction interval. Merely exceeding a frequency-drop threshold is insufficient. A real worker regression covers the case where historical uncertainty overlaps the healthy range. Distinct recording hashes remain required.
 
 WebSocket handlers consume disconnect events while waiting for snapshots, so idle connections do not prevent server shutdown. The local runner supervises API and worker children together, bounds message size and escalates termination only after a bounded grace period. An actual native WebSocket connection was closed during an owned server restart.
-
-## 2026-10-26 — Public publication needs explicit approval
-
-The configured public repository exists and is empty. Automatic approval review rejected the attempt to push the local build because explicit authorization is required for that public destination and payload. Keep the reviewed local commits and release package ready. Do not retry publication through another transport without approval. AWS remains deferred and independent of this publication decision.

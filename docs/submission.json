@@ -9,7 +9,5 @@
     "field_validation": false,
     "cool_execution": false,
     "aws_deployment": false
-  },
-  "repository_contents_published": false,
-  "publication_status": "Awaiting explicit approval to publish committed source, report and measured evidence to this public repository"
+  }
 }

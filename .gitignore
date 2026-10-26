@@ -20,3 +20,40 @@ outputs/
 *.egg-info/
 
 .pnpm-store/
+
+# Credentials and machine-local configuration
+.env.*
+!.env.example
+.aws/
+.ssh/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Databases, logs and generated reports
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.log
+.coverage*
+coverage/
+htmlcov/
+.cache/
+
+# Recordings and downloaded model weights
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.wav
+*.onnx
+*.pt
+*.pth
+*.safetensors
+
+# Unrelated local reference image
+/original-vs-actual-tv.png
