@@ -1,0 +1,136 @@
+/* Kit tokens retuned to the console's night palette. The one lit part is the
+   bottom chord the camera watches, in the console's teal. */
+.iso.bridge-iso {
+  --anatomy-card: #0a1020;
+  --anatomy-paper: #0a1020;
+  --anatomy-face: #16203a;
+  --anatomy-top: #24314f;
+  --anatomy-shade-0: #0f172c;
+  --anatomy-shade-1: #141d36;
+  --anatomy-shade-2: #19233f;
+  --anatomy-shade-3: #1e2947;
+  --anatomy-lit-top: #1f4a55;
+  --anatomy-lit-shade: #173843;
+  --anatomy-hi: #d5def2;
+  --anatomy-mid: #8090b8;
+  --anatomy-lo: #50608a;
+  --anatomy-faint: #303d63;
+  --anatomy-lit: #3de0d0;
+  --anatomy-halo: #01030a;
+  --anatomy-halo-opacity: 0.85;
+  --anatomy-dot: #c5cfe2;
+  --anatomy-text: #c5cfe2;
+  --anatomy-muted: #8f9cb6;
+  --bridge-water-top: #10244a;
+  --bridge-water-side: #0c1a3a;
+}
+.bridge-iso .iso-plate {
+  padding: 48px 20px 44px;
+  border-radius: 18px;
+  background: var(--anatomy-card);
+  box-shadow: 0 0 0 1px rgba(160, 180, 230, 0.16);
+}
+.bridge-iso .iso-plate-corner {
+  font-family: Manrope, system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+.bridge-iso .iso-plate-corner[data-corner="title"] {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+.bridge-iso .iso-plate-corner[data-corner="hint"] {
+  text-transform: none;
+  letter-spacing: 0.01em;
+  pointer-events: auto;
+}
+.bridge-iso .iso-legend {
+  display: block;
+  color: var(--anatomy-muted);
+  font-size: 13px;
+}
+.bridge-iso .iso-legend strong {
+  color: var(--anatomy-text);
+  font-weight: 500;
+}
+.bridge-send {
+  padding: 6px 12px;
+  margin: -6px 0 0 -2px;
+  border-radius: 999px;
+  border: 1px solid rgba(61, 224, 208, 0.45);
+  background: rgba(61, 224, 208, 0.08);
+  color: var(--ink, #eef2f8);
+  font-size: 12px;
+  cursor: pointer;
+}
+.bridge-send:hover {
+  border-color: var(--anatomy-lit);
+}
+.bridge-send[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: default;
+}
+.bridge-water > .iso-top {
+  fill: var(--bridge-water-top);
+}
+.bridge-water > .iso-shade {
+  fill: var(--bridge-water-side);
+}
+.bridge-target > .iso-fill {
+  fill: var(--anatomy-lit);
+  fill-opacity: 0.35;
+}
+.bridge-target > .iso-edge {
+  stroke: var(--anatomy-lit);
+}
+.bridge-sight {
+  fill: none;
+  stroke: var(--anatomy-lit);
+  stroke-width: 0.7px;
+  stroke-dasharray: 2 4;
+  opacity: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+.bridge-still {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--anatomy-paper);
+}
+.bridge-still .iso-svg {
+  width: 100%;
+  height: 100%;
+}
+.bridge-truck {
+  --anatomy-top: #4b5d8c;
+  --anatomy-shade-0: #26325a;
+  --anatomy-shade-1: #2e3b66;
+  --anatomy-shade-2: #364572;
+  --anatomy-shade-3: #3f4f7f;
+  --anatomy-halo-opacity: 0.4;
+}
+.bridge-rig-halo {
+  opacity: 0.5;
+}
+@media (max-width: 560px) {
+  .bridge-iso .iso-plate {
+    padding: 40px 0 56px;
+    overflow: hidden;
+  }
+  .bridge-iso .iso-plate-corners {
+    inset: 16px 14px;
+  }
+  .bridge-iso .iso-plate-corner[data-corner="title"] {
+    display: none;
+  }
+  .bridge-iso .iso-plate-corner[data-corner="hint"] {
+    bottom: 0;
+  }
+  .bridge-hero .iso-svg {
+    width: 118%;
+    margin-left: -9%;
+  }
+}

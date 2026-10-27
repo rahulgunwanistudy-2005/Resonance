@@ -415,13 +415,6 @@ footer strong {
   height: 8px;
   border-radius: 50%;
 }
-.bridge-scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
 .thumb {
   position: relative;
   flex: none;
@@ -582,26 +575,8 @@ legend {
 /* Home */
 .hero {
   position: relative;
-  min-height: max(760px, 100vh);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-}
-.hero-scene {
-  position: absolute;
-  inset: 0;
-}
-.hero-scene::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(7, 11, 20, 0.84) 0%,
-    rgba(7, 11, 20, 0.45) 42%,
-    rgba(7, 11, 20, 0) 70%
-  );
 }
 .hero-body,
 .hero-principles {
@@ -612,12 +587,17 @@ legend {
   padding: 0 48px;
 }
 .hero-body {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
-  padding-top: 140px;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+  align-items: center;
+  gap: 40px;
+  padding-top: 72px;
+}
+.hero-figure {
+  min-width: 0;
+}
+.hero-figure .iso-figure {
+  margin: 0;
 }
 .hero-copy {
   max-width: 640px;
@@ -685,56 +665,6 @@ legend {
 }
 .play-link:hover:not(:disabled) .play-ring {
   border-color: var(--ink);
-}
-.hero-aside {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 18px;
-}
-.scribble {
-  margin: 0 24px 0 0;
-  font-family: var(--script);
-  font-weight: 500;
-  font-size: 34px;
-  line-height: 1.05;
-  color: #f3e9ff;
-  text-align: right;
-  transform: rotate(-5deg);
-}
-.dial {
-  width: 168px;
-  height: 168px;
-  border-radius: 50%;
-  border: 1px solid rgba(200, 212, 240, 0.45);
-  background: rgba(7, 11, 20, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  text-align: center;
-}
-.dial svg {
-  width: 100px;
-  height: 32px;
-}
-.dial path {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.4;
-}
-.dial strong {
-  font-size: 22px;
-  font-weight: 300;
-}
-.dial small {
-  font-size: 14px;
-}
-.dial span {
-  font-size: 11px;
-  color: var(--ink-soft);
-  max-width: 12ch;
 }
 .hero-principles {
   list-style: none;
@@ -1555,6 +1485,9 @@ audio {
 }
 
 @media (max-width: 1100px) {
+  .hero-body {
+    grid-template-columns: 1fr;
+  }
   .focus-card {
     position: relative;
     right: auto;
@@ -1583,17 +1516,11 @@ audio {
     padding-right: 16px;
   }
   .hero-body {
-    padding-top: 260px;
+    padding-top: 40px;
   }
   .hero-principles::before {
     left: 16px;
     right: 16px;
-  }
-  .hero-aside {
-    align-items: flex-start;
-  }
-  .scribble {
-    display: none;
   }
   .network {
     margin: 0 -16px;

@@ -13,7 +13,7 @@ import type {
 import { Chart } from "./components/Chart";
 import { Timeline } from "./components/Timeline";
 import { ModeShape } from "./components/ModeShape";
-import { BridgeScene } from "./components/BridgeScene";
+import { BridgeFigure } from "./components/bridge/BridgeFigure";
 import {
   Arrow,
   Badge,
@@ -349,7 +349,7 @@ export default function App() {
               {bridge && (
                 <article className="focus-card">
                   <div className="thumb">
-                    <BridgeScene mood="night" ribbon={false} />
+                    <BridgeFigure />
                   </div>
                   <div>
                     <h2>{bridge.bridge.name}</h2>
@@ -437,7 +437,7 @@ export default function App() {
                   approvals.data.map((item) => (
                     <article className="ticket" key={item.id}>
                       <div className="thumb">
-                        <BridgeScene mood="night" ribbon={false} />
+                        <BridgeFigure />
                       </div>
                       <div className="ticket-body">
                         <Badge
@@ -720,7 +720,7 @@ export default function App() {
                   />
                 ) : (
                   <div className="camera-empty">
-                    <BridgeScene mood="night" truck />
+                    <BridgeFigure truck />
                     <div>
                       <p>
                         {record

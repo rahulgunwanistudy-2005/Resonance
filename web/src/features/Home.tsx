@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../api";
-import { BridgeScene } from "../components/BridgeScene";
+import { BridgeFigure } from "../components/bridge/BridgeFigure";
 import { Arrow, PlayGlyph, Spark } from "../components/Marks";
 import type { CaptureRecord } from "../types";
 export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
@@ -53,12 +53,6 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
   return (
     <>
       <section className="hero" aria-labelledby="hero-title">
-        <div className="hero-scene">
-          <BridgeScene
-            mood="dusk"
-            label="Illustrated suspension bridge at dusk with a wave ribbon along the deck"
-          />
-        </div>
         <div className="hero-body">
           <div className="hero-copy">
             <p className="eyebrow">
@@ -93,27 +87,23 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
               </button>
             </div>
           </div>
-          <div className="hero-aside">
-            <p className="scribble" aria-hidden="true">
-              The bridge
-              <br />
-              is breathing.
-            </p>
-            <div className="dial">
-              <svg viewBox="0 0 110 36" aria-hidden="true">
-                <path d="M2 18 C12 18 14 4 24 4 S36 32 46 32 S58 4 68 4 S80 32 90 32 S98 18 108 18" />
-              </svg>
-              <strong>
-                {before?.spectrum ? (
-                  <>
-                    {before.spectrum.peak_hz.toFixed(2)} <small>Hz</small>
-                  </>
-                ) : (
-                  "Not run"
-                )}
-              </strong>
-              <span>Demo reference frequency</span>
-            </div>
+          <div className="hero-figure">
+            <BridgeFigure
+              variant="hero"
+              label="Isometric drawing of a steel through-truss bridge over a river. A truck crosses, the span sags and rings in its first bending mode, and a camera on a tripod on the near bank watches the bottom chord."
+              caption={
+                <>
+                  An illustration, not a measurement: deflection is exaggerated
+                  and the motion slowed. The demo reference capture measured{" "}
+                  {before?.spectrum ? (
+                    <strong>{before.spectrum.peak_hz.toFixed(2)} Hz</strong>
+                  ) : (
+                    "nothing yet"
+                  )}
+                  .
+                </>
+              }
+            />
           </div>
         </div>
         <ul className="hero-principles">
@@ -194,7 +184,7 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
             </>
           ) : (
             <>
-              <BridgeScene mood="night" ribbon={false} />
+              <BridgeFigure />
               <p className="stage-empty" role="status">
                 {history.isPending
                   ? "Loading the generated demonstration…"
