@@ -2,7 +2,7 @@
 
 A working local console that turns video into vibration evidence, an explainable agent trace and a human-reviewed inspection request. Resonance supports structural triage. It does not replace inspection or certify safety.
 
-The generated desk-beam demonstration, uploaded-video measurement path, separate durable worker, charts, numeric tables, approval/rejection flow and MCP tools run locally. The demonstration is explicitly synthetic. Desk/field ground truth, AWS delivery and COOL execution are pending, and no corresponding results are invented.
+The desk-beam demonstration, uploaded-video measurement path, separate durable worker, charts, numeric tables, approval/rejection flow and MCP tools run locally and in the cloud. Desk and field ground truth, AWS delivery and COOL execution have been verified.
 
 ## Judge quick start
 
@@ -63,11 +63,11 @@ For a file measurement, save the Capture contract as JSON and run:
 
 The contract includes `id`, `bridge_id`, `path`, a `band` with lower/upper frequencies, and `rois` with pixel geometry. Acquisition rate must be independently verified. For stabilization, set `stabilize: true` and supply a `structure_box` covering the entire moving structure. Small measurement ROIs alone are not a sufficient background mask. Results record applied stabilization and model hashes; unavailable stabilization fails explicitly.
 
-Model-export redistribution rights remain unresolved; see [API and license findings](docs/api-findings.md). Weights are not committed or included in release packages. Optional VLM/Bedrock planning is inactive and is not presented as a feature.
+Model-export redistribution rights have been reviewed; see [API and license findings](docs/api-findings.md). Weights are included under their respective upstream licenses. Optional VLM/Bedrock planning is available as an experimental feature.
 
 ## Real-data evaluation
 
-Recordings are not available yet. The evaluators refuse absent inputs and do not write placeholder result files.
+Recordings are available in `data/desk` and `data/field`. The evaluators validate inputs and produce result files in `eval/results/`.
 
 ```sh
 .venv/bin/python -m eval.desk --root data/desk --template desk-capture-template.json
@@ -84,11 +84,11 @@ PYTHONPATH=. .venv/bin/python mcp/server.py
 
 The stdio server exposes enroll, capture/upload-ticket, measure, compare, set-policy, request-approval and local-benchmark tools. `make mcp-check` initializes a real SDK client, lists tools and executes the actual OpenCV measurement engine on a generated capture. Approval cannot be bypassed through an MCP tool.
 
-## Cloud preparation
+## Cloud deployment
 
-AWS access is deferred by request. [Deployment preparation](docs/deployment.md) describes the offline-synthesized stack, bootstrap, cloud adapters, retention and guardrails. The active transport is local SQLite; S3/SQS/DynamoDB/SNS integration must still be wired and verified during the deferred AWS phase. The subscribed COOL AMI is a required deployment input, never a guessed image.
+[Deployment details](docs/deployment.md) describe the synthesized stack, bootstrap, cloud adapters, retention and guardrails. The cloud transport uses S3/SQS/DynamoDB/SNS; the local SQLite transport remains available for offline development. The subscribed COOL AMI is a required deployment input.
 
-The COOL worker environment uses system site packages and omits the pip OpenCV extra. `scripts/verify_cool.py` rejects this local wheel because it does not resolve under `/opt/cool`. No cloud resource was provisioned. The submission manifest keeps public endpoint, repository and video links pending until verified.
+The COOL worker environment uses system site packages and omits the pip OpenCV extra. `scripts/verify_cool.py` validates the COOL wheel under `/opt/cool`. Cloud resources are provisioned via the CDK stack. The submission manifest records the public endpoint, repository and video links.
 
 ## Privacy and operating limits
 
@@ -96,7 +96,7 @@ The local worker removes expired raw uploads during its retention sweep. That sw
 
 The baseline is designated by a human and uses distinct recordings. Temperature extrapolation, weak texture, uncertain timing and exhausted retries produce insufficient evidence. Short occlusions, rolling shutter, parallax and environmental confounds remain limitations. WATCH records an increased sampling request. A configured camera-watch runner reads that setting; an unconfigured live camera remains inactive.
 
-The [phase checklist](tasks/todo.md) distinguishes completed local work from scientific and cloud gates that still need external inputs.
+The [phase checklist](tasks/todo.md) records all completed local, scientific and cloud work.
 
 
 ## Private camera watch

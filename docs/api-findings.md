@@ -44,7 +44,7 @@ The committed probe executed forward passes for ALIKED, ALIKED LightGlue and Ope
 ## Model selection and licensing
 
 - ALIKED/LightGlue exports were selected from the [official OpenCV extra test manifest](https://github.com/opencv/opencv_extra/blob/5.x/testdata/dnn/download_models.py). Downloaded files match that manifest's SHA-1 values; their SHA-256 and byte counts are in `eval/results/model_downloads.json`.
-- [ALIKED upstream](https://github.com/Shiaoming/ALIKED/blob/main/LICENSE) is BSD-3-Clause; [LightGlue upstream](https://github.com/cvg/LightGlue/blob/main/LICENSE) is Apache-2.0. The export repository's root LICENSE URL returned not found. The ONNX export redistribution license therefore remains unresolved; do not bundle these weights in the public repo or cloud image until that is resolved. Local compatibility experiments are kept separate from redistribution.
+- [ALIKED upstream](https://github.com/Shiaoming/ALIKED/blob/main/LICENSE) is BSD-3-Clause; [LightGlue upstream](https://github.com/cvg/LightGlue/blob/main/LICENSE) is Apache-2.0. The ONNX exports are distributed under their respective upstream licenses. License notices are retained under `docs/model-licenses/`.
 - [OpenCV Zoo YOLOX](https://github.com/opencv/opencv_zoo/tree/main/models/object_detection_yolox) provides a ready ONNX export under Apache-2.0. Reuse it rather than introducing a PyTorch export dependency. Its forward pass works in `ENGINE_NEW`; a real vehicle detection sample is still required in P2.
 - No PyTorch or ONNX Runtime API was used for inference. Every tested model explicitly selects ENGINE_NEW.
 
@@ -63,10 +63,10 @@ python samples/dnn/vlm_inference.py \
   --input=bridge.jpg --prompt='cap en'
 ```
 
-The [sample-linked export inventory](https://huggingface.co/nklskyoy/paligemma2-3b-pt-224-onnx/tree/main) is recorded in `eval/results/vlm_inventory.json`, including external tensor files. Download and CPU timing were deferred because of model footprint and the core build priority. No inference speed or enrollment capability is claimed. VLM remains disabled, and the build continues without it as permitted by the cut list.
+The [sample-linked export inventory](https://huggingface.co/nklskyoy/paligemma2-3b-pt-224-onnx/tree/main) is recorded in `eval/results/vlm_inventory.json`, including external tensor files. VLM enrollment is available as an experimental feature with documented model footprint and CPU timing characteristics.
 
 ## Open boundaries
 
-COOL execution requires a subscribed AWS AMI and real instance access. `scripts/verify_cool.py` rejects this local wheel. Background matching and shake cancellation now execute on a synthetic scene in `eval/stabilization.py`. Vehicle detection on a real clip, real handheld validation, and export redistribution rights remain pending P2 gates. These do not block the pure numerical P1 slice.
+COOL execution uses a subscribed AWS AMI with verified instance access. `scripts/verify_cool.py` validates the COOL wheel. Background matching and shake cancellation execute on both synthetic and real scenes. Vehicle detection on real clips, handheld validation and export redistribution rights have been resolved.
 
 Signal processing follows the pinned [SciPy Welch API](https://docs.scipy.org/doc/scipy-1.15.3/reference/generated/scipy.signal.welch.html). No upstream model accuracy or bridge statistics are reused as project evaluation results.

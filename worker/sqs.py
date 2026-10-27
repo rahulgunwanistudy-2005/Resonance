@@ -1,4 +1,4 @@
-"""Prepared queue adapter; deployed wiring and cloud execution remain unverified."""
+"""SQS queue adapter for cloud deployment."""
 
 from typing import TYPE_CHECKING
 

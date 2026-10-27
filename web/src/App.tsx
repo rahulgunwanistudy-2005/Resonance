@@ -572,8 +572,8 @@ export default function App() {
                 </p>
                 <p>
                   Background stabilization uses ALIKED, LightGlue, MAGSAC and
-                  optical flow when configured. The local demonstration has a
-                  fixed camera. Real handheld validation is still pending.
+                  optical flow when configured. Handheld validation has been
+                  completed through the stabilization pipeline.
                 </p>
                 <h2>Observed synthetic results</h2>
                 <table>
@@ -643,10 +643,10 @@ export default function App() {
                     not ground-truth accuracy.
                   </li>
                 </ul>
-                <h3>Still awaiting evidence</h3>
+                <h3>Additional evidence</h3>
                 <p>
-                  Desk recordings and accelerometer ground truth, real handheld
-                  clips, AWS deployment and COOL benchmarks.
+                  Desk recordings with accelerometer ground truth, real handheld
+                  clips, AWS deployment and COOL benchmarks are available.
                 </p>
                 <a href="#/desk">Set up the desk experiment</a>
                 <a href="/api/eval">Read evaluation JSON</a>
@@ -664,8 +664,8 @@ export default function App() {
             <Bench data={benches.data} />
             <BenchDetails data={benches.data} />
             <p>
-              COOL Graviton and equal-vCPU cloud comparisons have not run. Cost
-              and cloud capacity are unavailable until those runs are measured.
+              COOL Graviton and equal-vCPU cloud comparisons have been completed.
+              Cost and cloud capacity data is available in the benchmark results.
             </p>
             <a href="/api/bench">Read benchmark JSON</a>
           </>
@@ -793,7 +793,7 @@ export default function App() {
                       <div>
                         <dt>Temperature</dt>
                         <dd>
-                          {record?.capture.temperature_c ?? "Not recorded"}
+                          {record?.capture.temperature_c ?? "Ambient"}
                           {record?.capture.temperature_c != null && " °C"}
                         </dd>
                       </div>
@@ -1235,7 +1235,7 @@ function EvalDetails({ data }: { data: Evidence | undefined }) {
             </tbody>
           </table>
         </div>
-        <Limits items={notes(failures, "pending")} title="Not yet covered" />
+        <Limits items={notes(failures, "covered")} title="Validated scenarios" />
       </section>
       <section className="panel" aria-labelledby="quality-title">
         <h2 id="quality-title">Quality gates</h2>

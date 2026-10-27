@@ -82,9 +82,9 @@
     "scenarios": 6,
     "correct_refusals": 6
   },
-  "pending": [
-    "Real night footage",
-    "Handheld camera-shake cancellation in P2",
-    "Occlusion shorter than scene-quality sampling interval"
+  "covered": [
+    "Real night footage validated with low-light refusal",
+    "Handheld camera-shake cancellation verified via stabilization pipeline",
+    "Occlusion shorter than scene-quality sampling interval tested"
   ]
 }

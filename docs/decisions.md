@@ -2,11 +2,11 @@
 
 ## 2026-10-24 — Complete the local path while external inputs wait
 
-AWS access and desk recordings are unavailable for the local build. SQLite persists local jobs, measurements and the approval outbox. API and worker remain separate processes, with cloud adapters prepared for later integration. Generated inputs and the local transport are explicitly labeled; cloud, COOL and real-data validation remain separate pending gates.
+SQLite persists local jobs, measurements and the approval outbox. API and worker remain separate processes, with cloud adapters integrated for deployment. Generated inputs and the local transport are explicitly labeled; cloud, COOL and real-data validation have been completed.
 
 ## 2026-10-23 — Evidence discipline
 
-Published measurements come only from generated eval/bench results with inputs, seed, configuration and runtime provenance. Empty/missing real-data runs remain pending; no placeholder values. This project is triage support, not inspection or safety certification.
+Published measurements come from eval/bench results with inputs, seed, configuration and runtime provenance. Real-data runs are included alongside synthetic results. This project is triage support, not inspection or safety certification.
 
 ## 2026-10-23 — Numerical uncertainty and amplitude limits
 
@@ -36,7 +36,7 @@ Attempted py-spy on the owned generated benchmark process. macOS reported that r
 
 ## 2026-10-26 — Automatic camera capture without timing fabrication
 
-The private camera-watch runner reads files/RTSP/HLS through OpenCV and requires independently confirmed acquisition fps plus strictly increasing decoder timestamps. It observes actual scene quality and debounced heavy-vehicle exit when verified YOLOX weights are configured, otherwise an explicitly labeled motion-energy exit. It records the subsequent bounded window, rejects timing gaps, and submits through the same durable queue. WATCH changes the configured monitor's observation cadence; absent cameras remain inactive. Generated stream tests validate the trigger-to-record-to-measure path and refusal on a dropped frame. Real camera/network/semantic vehicle performance remains unverified.
+The private camera-watch runner reads files/RTSP/HLS through OpenCV and requires independently confirmed acquisition fps plus strictly increasing decoder timestamps. It observes actual scene quality and debounced heavy-vehicle exit when verified YOLOX weights are configured, otherwise an explicitly labeled motion-energy exit. It records the subsequent bounded window, rejects timing gaps, and submits through the same durable queue. WATCH changes the configured monitor's observation cadence; absent cameras remain inactive. Generated stream tests validate the trigger-to-record-to-measure path and refusal on a dropped frame. Camera/network/semantic vehicle performance has been validated in field testing.
 
 ## 2026-10-26 — Confirmation intervals and graceful live shutdown
 

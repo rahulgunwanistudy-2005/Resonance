@@ -195,7 +195,7 @@ def main() -> None:
         + "\n"
     )
     print(
-        "Generated camera inputs processed through the local worker; approval remains pending"
+        "Generated camera inputs processed through the local worker; approval ready for review"
     )
 
 

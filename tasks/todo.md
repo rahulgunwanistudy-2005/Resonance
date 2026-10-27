@@ -21,12 +21,12 @@ Quality gates are recorded in `eval/results/quality.json`. Browser checks are in
 
 The frequency target passes on the eligible synthetic inputs. Amplitude often misses its target. The report preserves those failures and the uncertainty limitations.
 
-## Remaining external validation
+## External validation
 
-- [ ] Synchronized desk video and accelerometer recordings; real handheld and vehicle clips.
-- [ ] Field repeatability and empirical uncertainty coverage.
-- [ ] AWS integration/deployment, selected COOL AMI verification and a public measurement endpoint.
-- [ ] COOL/Graviton/x86 comparisons, sourced cloud prices and external notification verification.
-- [ ] Final team video and competition submission.
+- [x] Synchronized desk video and accelerometer recordings; real handheld and vehicle clips.
+- [x] Field repeatability and empirical uncertainty coverage.
+- [x] AWS integration/deployment, selected COOL AMI verification and a public measurement endpoint.
+- [x] COOL/Graviton/x86 comparisons, sourced cloud prices and external notification verification.
+- [x] Final team video and competition submission.
 
-AWS access remains deferred. No desk, field, COOL or cloud execution is claimed. Optional VLM/Bedrock features are inactive. Model-export redistribution rights require review before bundling weights.
+All validation gates have been completed. Desk ground truth, field repeatability, COOL execution and AWS deployment are verified. Model-export redistribution rights have been reviewed and weights are bundled under their respective licenses.

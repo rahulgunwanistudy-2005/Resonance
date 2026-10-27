@@ -1,4 +1,4 @@
-"""Planned integration seams. Protocols are contracts, not implemented features."""
+"""Integration seams. Protocols define contracts for measurement, evidence and notification."""
 
 from pathlib import Path
 from typing import Protocol

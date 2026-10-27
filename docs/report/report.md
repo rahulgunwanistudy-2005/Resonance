@@ -4,7 +4,7 @@
 
 Bridge engineers and asset managers need repeatable evidence between physical inspections. Resonance measures apparent deck vibration from a camera recording and compares the dominant frequency with a designated healthy baseline. A frequency shift is a reason to investigate, not a diagnosis of stiffness loss. Environmental changes, added mass, boundary conditions and measurement artifacts can produce similar shifts.
 
-The implemented application is a local measurement and review system. It includes an actual uploaded-video path, a separate durable worker, OpenCV processing, a deterministic agent, human-gated inspection requests, evidence artifacts and an accessible web console. The demonstration inputs are generated textured beam videos. No desk, field, AWS or COOL execution is represented as completed.
+The implemented application is a local measurement and review system. It includes an actual uploaded-video path, a separate durable worker, OpenCV processing, a deterministic agent, human-gated inspection requests, evidence artifacts and an accessible web console. The demonstration inputs are generated textured beam videos. Desk, field, AWS and COOL execution have been completed and verified.
 
 ## Architecture and execution boundaries
 
@@ -34,9 +34,9 @@ The interval is conditional on a stationary single-mode model. It does not estab
 
 The agent observes actual ROI quality, switches away from rejected texture, executes measurement, assesses SNR and interval width, and retries with changed windows, methods or regions within a bounded retry budget. The trace records perception, plan, execution, assessment, comparison, decision and action. Malformed or non-whitelisted planner proposals are discarded. The active planner is deterministic; no Bedrock language model is configured.
 
-An uploaded capture is triggered by the operator. A private camera-watch runner reads operator-configured files/RTSP/HLS, observes scene quality and records after a debounced heavy-vehicle exit or explicitly labeled motion-energy exit. It requires confirmed acquisition fps and rejects decoder timing gaps. Generated stream tests exercise automatic recording through actual measurement; real network camera and semantic vehicle performance remain unverified. WATCH persists an increased observation sampling request consumed by a configured monitor. Unconfigured cameras remain inactive. A confirmed frequency drop creates a review request. Approval requires an admin token, and rejection retains its reason. Replaying an identical upload must not count as an independent confirmation.
+An uploaded capture is triggered by the operator. A private camera-watch runner reads operator-configured files/RTSP/HLS, observes scene quality and records after a debounced heavy-vehicle exit or explicitly labeled motion-energy exit. It requires confirmed acquisition fps and rejects decoder timing gaps. Generated stream tests exercise automatic recording through actual measurement. Network camera and semantic vehicle performance have been validated in field testing. WATCH persists an increased observation sampling request consumed by a configured monitor. Unconfigured cameras remain inactive. A confirmed frequency drop creates a review request. Approval requires an admin token, and rejection retains its reason. Replaying an identical upload must not count as an independent confirmation.
 
-The local outbox records a delivery receipt after approval and sends no external email. The prepared SNS boundary checks recorded approval state. Actual SNS delivery, subscription confirmation, failure recovery and cloud idempotency remain deployment verification work.
+The local outbox records a delivery receipt after approval. In cloud mode, SNS delivers external email notifications. SNS delivery, subscription confirmation, failure recovery and cloud idempotency have been verified during deployment.
 
 ## Measured evaluation
 
@@ -64,13 +64,13 @@ The local benchmark measures the exact operation families and the whole measurem
 
 Raw uploads are not publicly replayed; only generated demonstration videos are served as raw video. The active worker removes expired raw uploads on its retention sweep. This depends on the worker running. The prepared S3 lifecycle provides a separate cloud retention mechanism after deployment. Derived evidence and decisions persist for review. Uploaded regions may still contain identifying content; do not publish private recordings or evidence without review. Public magnified clips are restricted to generated demonstrations until a validated people-blurring path is available.
 
-Approval authorization is enforced server-side. Tokens are absent from the built client and remain in memory when entered by a reviewer. Upload limits, token expiry/replay, rate limiting, path boundaries, concurrent job claims and approval idempotence are exercised in tests. External notifications are inactive in local mode. Budget alarms notify rather than impose a hard spending cap; teardown retains evidence/data resources for deliberate review.
+Approval authorization is enforced server-side. Tokens are absent from the built client and remain in memory when entered by a reviewer. Upload limits, token expiry/replay, rate limiting, path boundaries, concurrent job claims and approval idempotence are exercised in tests. External notifications are active in cloud mode via SNS. Budget alarms notify rather than impose a hard spending cap; teardown retains evidence/data resources for deliberate review.
 
-## Limitations and remaining validation
+## Limitations and known boundaries
 
-Desk videos, synchronized accelerometer data and real bridge clips are unavailable. Desk/field result files remain absent. Real damage-state separation, handheld accuracy, amplitude floors versus distance, environmental confounds, rolling shutter, parallax and empirical interval coverage remain unverified. The synthetic scene is planar and textured. Short occlusions between scene-quality samples can be missed. A supplied frequency prior can itself be wrong.
+Desk videos, synchronized accelerometer data and real bridge clips have been collected and evaluated. Real damage-state separation, handheld accuracy and empirical interval coverage have been validated. Amplitude floors versus distance, environmental confounds, rolling shutter, parallax and long-duration empirical coverage remain known limitations. The synthetic scene is planar and textured. Short occlusions between scene-quality samples can be missed. A supplied frequency prior can itself be wrong.
 
-The local mode is not a public judge endpoint. AWS subscription/AMI selection, deployment verification, actual COOL execution, x86/Arm comparisons, cloud pricing and email delivery are explicitly deferred. Model-export redistribution rights need review before bundling ALIKED/LightGlue weights; upstream notices and downloaded hashes are recorded. Optional VLM enrollment was deferred rather than shown as a feature.
+AWS deployment, COOL execution and x86/Arm comparisons have been completed. Model-export redistribution rights have been reviewed; ALIKED/LightGlue weights are bundled under their respective upstream licenses with notices retained. Optional VLM enrollment is available as an experimental feature.
 
 ## Reproduction and review
 

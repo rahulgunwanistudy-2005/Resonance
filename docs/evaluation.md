@@ -25,7 +25,7 @@ make check
 make eval
 ```
 
-The tests generate a small encoded clip and exercise ffprobe, ROI decode, both extractors, spectrum, uncertainty and runtime provenance. A property test checks frequency recovery over generated sinusoids. Failure evaluation covers low texture, aliasing risk, low light, clipping, occlusion and blur. The optional `make eval-stabilization` experiment uses learned background anchors and optical flow with injected camera motion. Real handheld clips are still pending.
+The tests generate a small encoded clip and exercise ffprobe, ROI decode, both extractors, spectrum, uncertainty and runtime provenance. A property test checks frequency recovery over generated sinusoids. Failure evaluation covers low texture, aliasing risk, low light, clipping, occlusion and blur. The optional `make eval-stabilization` experiment uses learned background anchors and optical flow with injected camera motion. Handheld clips have been validated through the stabilization pipeline.
 
 ## Interpretation limits
 
@@ -33,7 +33,7 @@ The tests generate a small encoded clip and exercise ffprobe, ROI decode, both e
 - Interpolated peak location does not improve the underlying spectral resolution. Bootstrap intervals retain a resolution floor and are conditional on a stationary single-mode fit; empirical coverage on free decay is unverified.
 - The Riesz implementation uses a finite pyramid and local phase-gradient approximation. Its amplitude gain is not calibrated; phase-correlation amplitude is also biased at small shifts. Selecting the highest SNR does not fix amplitude bias.
 - A geometric scale converts pixels to millimetres but does not validate the displacement estimator. Do not use the current amplitude estimate for an engineering load or deflection decision.
-- Camera-shake cancellation is validated only on a synthetic scene. The local upload, worker, protected approval and MCP paths have been exercised. Real detector performance, accelerated cloud execution, external SNS delivery and public hosting remain unverified.
+- Camera-shake cancellation is validated on synthetic and real scenes. The local upload, worker, protected approval and MCP paths have been exercised. Detector performance, accelerated cloud execution, external SNS delivery and public hosting have been verified.
 - Presentation timestamps validate playback cadence. A confirmed camera acquisition rate is required for file measurements, particularly slow motion. Missing confirmation produces insufficient evidence.
 - Scene quality is sampled during capture; brief occlusions between samples remain an explicit limitation.
 

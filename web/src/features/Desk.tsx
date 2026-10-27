@@ -95,7 +95,7 @@ export function Desk({
         <span className="local-mode">
           {recorded
             ? `${recorded} recorded trial${recorded === 1 ? "" : "s"}`
-            : "Awaiting recordings"}
+            : "Ready for recordings"}
         </span>
       </div>
 
@@ -154,7 +154,7 @@ export function Desk({
                           (delta != null
                             ? ` · ${delta < 0 ? "−" : "+"}${Math.abs(delta).toFixed(1)}%`
                             : "")
-                        : "Not recorded"}
+                        : "No data"}
                     </span>
                   </div>
                 );
@@ -269,7 +269,7 @@ export function Desk({
                         {s.label}
                         <div className="sub">{s.how}</div>
                       </th>
-                      <td className="muted">Not recorded</td>
+                      <td className="muted">No data</td>
                       <td className="muted">–</td>
                       <td className="muted">–</td>
                       <td className="muted">–</td>
@@ -362,7 +362,7 @@ function Reading({
   color: string;
   shift?: number | null;
 }) {
-  if (!trials) return <p className="placeholder">Not recorded yet.</p>;
+  if (!trials) return <p className="placeholder">No trials recorded for this state.</p>;
   return (
     <>
       <p className="reading" style={{ color }}>
