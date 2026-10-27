@@ -7,7 +7,12 @@ name = "resonance"
 version = "0.1.0"
 description = "Video vibration measurement for structural triage"
 requires-python = ">=3.12,<3.13"
-dependencies = ["numpy==2.2.6", "scipy==1.15.3", "pydantic==2.12.3"]
+dependencies = [
+    "numpy==2.2.6",
+    "scipy==1.15.3",
+    "pydantic==2.12.3",
+    "python-dotenv==1.2.4",
+]
 
 [project.optional-dependencies]
 local = ["opencv-python-headless==5.0.0.93"]

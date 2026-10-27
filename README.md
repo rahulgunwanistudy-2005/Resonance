@@ -19,6 +19,8 @@ make run
 
 Open [the local console](http://127.0.0.1:8000). The API and worker are separate processes; SQLite persists their queue and results. The app binds to the local interface by default.
 
+For local configuration, copy `.env.example` to `.env` in the repository root. Settings load that file automatically when commands run from the repository root; exported environment variables take priority. Keep `.env` private and out of Git.
+
 The guided path: play the labeled generated capture, inspect its trace and spectrum, open the numeric chart table, then review the inspection request. “Measure a video” runs your own clip through the same worker. Confirm the camera acquisition rate, select a textured region, optionally click two scale points and enter the known length, then run the measurement. Every drawn region is measured; two or more regions along the span add a per-region table and a mode shape, and regions without usable texture are dropped. A missing healthy baseline produces insufficient condition evidence even when the vibration measurement succeeds; the console shows the current baseline for each bridge.
 
 For approval testing, set `RESONANCE_ADMIN_TOKEN` in `.env` (at least 24 characters); without it the local runner creates a private token file at `outputs/local-admin-token`. Enter the token and a reason in Inspections. The same token protects baseline designation and permanent bridge deletion from the console (the generated demonstration cannot be deleted). The browser keeps it only in memory. Approval creates a local delivery receipt; no external email is sent. Rejection keeps its reason. Do not show the token in the submission video.

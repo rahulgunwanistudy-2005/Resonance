@@ -945,6 +945,7 @@ source = { editable = "." }
 dependencies = [
     { name = "numpy" },
     { name = "pydantic" },
+    { name = "python-dotenv" },
     { name = "scipy" },
 ]
 
@@ -998,6 +999,7 @@ requires-dist = [
     { name = "psutil", marker = "extra == 'report'", specifier = "==7.1.1" },
     { name = "pydantic", specifier = "==2.12.3" },
     { name = "pypdf", marker = "extra == 'report'", specifier = "==6.1.1" },
+    { name = "python-dotenv", specifier = "==1.2.4" },
     { name = "python-multipart", marker = "extra == 'service'", specifier = "==0.0.20" },
     { name = "reportlab", marker = "extra == 'report'", specifier = "==4.4.4" },
     { name = "scipy", specifier = "==1.15.3" },

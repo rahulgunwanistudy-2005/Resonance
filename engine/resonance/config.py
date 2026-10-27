@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import Literal
 
+from dotenv import dotenv_values
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -49,10 +50,16 @@ class Settings(BaseModel):
 
     @classmethod
     def from_env(cls) -> "Settings":
+        file_values = {
+            key: value
+            for key, value in dotenv_values(Path(".env"), interpolate=False).items()
+            if value is not None
+        }
+        environment = {**file_values, **os.environ}
         values = {
-            key: os.environ[f"RESONANCE_{key.upper()}"]
+            key: environment[f"RESONANCE_{key.upper()}"]
             for key in cls.model_fields
-            if f"RESONANCE_{key.upper()}" in os.environ
+            if f"RESONANCE_{key.upper()}" in environment
         }
         return cls.model_validate(values)
 
