@@ -201,8 +201,12 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
                 <>
                   {before.spectrum.peak_hz.toFixed(3)} <small>Hz</small>
                 </>
+              ) : history.isPending ? (
+                "Loading reference…"
+              ) : history.isError ? (
+                "Reference could not be loaded"
               ) : (
-                "Not run"
+                "Run the generated reference capture"
               )}
             </p>
             {before?.selected && (
@@ -251,6 +255,13 @@ export function Home({ onOpen }: { onOpen: (capture: string) => void }) {
                   src={`/api/captures/${record.capture.id}/artifacts/motion.wav`}
                 />
               </label>
+            )}
+            {!record?.artifacts.includes("motion.wav") && (
+              <p role="status">
+                {history.isPending
+                  ? "Loading generated audio…"
+                  : "Audio has not been rendered for this capture."}
+              </p>
             )}
             <p className="help">
               The deflection overlay is exaggerated and stops at the measured

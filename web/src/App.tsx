@@ -1,3 +1,4 @@
+import { numberText, valueText } from "./display";
 import { Home } from "./features/Home";
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -50,12 +51,11 @@ const triggerName: Record<string, string> = {
 function metric(value: unknown, path: string): string {
   let current = value;
   for (const part of path.split(".")) {
-    if (typeof current !== "object" || current === null) return "Not run";
+    if (typeof current !== "object" || current === null)
+      return "Evaluation has not been run";
     current = (current as Record<string, unknown>)[part];
   }
-  return typeof current === "number"
-    ? current.toLocaleString(undefined, { maximumFractionDigits: 4 })
-    : "Not run";
+  return valueText(current, "Evaluation has not been run");
 }
 // Stable pseudo-random placement so each enrolled bridge keeps its spot on the map.
 function place(id: string): [number, number] {
@@ -282,7 +282,13 @@ export default function App() {
           />
         ) : route === "desk" ? (
           <Desk
-            data={evaluation.data?.desk as DeskResult | undefined}
+            data={
+              (evaluation.data?.desk ?? evaluation.data?.desk_example) as
+                | DeskResult
+                | undefined
+            }
+            loading={evaluation.isPending}
+            error={evaluation.error?.message}
             target={
               (
                 evaluation.data?.synthetic as
@@ -325,19 +331,31 @@ export default function App() {
                 <dl className="tallies">
                   <div>
                     <dt>Enrolled</dt>
-                    <dd>{bridges.data?.length ?? "–"}</dd>
+                    <dd>
+                      {bridges.data?.length ??
+                        (bridges.isError
+                          ? "Connection unavailable"
+                          : "Loading…")}
+                    </dd>
                   </div>
                   <div>
                     <dt>Increased sampling</dt>
                     <dd className="amber">
                       {bridges.data?.filter((b) => b.sampling_multiplier > 1)
-                        .length ?? "–"}
+                        .length ??
+                        (bridges.isError
+                          ? "Connection unavailable"
+                          : "Loading…")}
                     </dd>
                   </div>
                   <div>
                     <dt>Awaiting review</dt>
                     <dd className="coral">
-                      {approvals.data ? pending.length : "–"}
+                      {approvals.data
+                        ? pending.length
+                        : approvals.isError
+                          ? "Connection unavailable"
+                          : "Loading…"}
                     </dd>
                   </div>
                 </dl>
@@ -390,6 +408,17 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
+                  <EmptyRows
+                    count={bridges.data?.length ?? 0}
+                    columns={4}
+                    message={
+                      bridges.isPending
+                        ? "Loading enrolled bridges…"
+                        : bridges.isError
+                          ? "Enrolled bridges could not be loaded"
+                          : "No bridges enrolled. Measure a video to add one."
+                    }
+                  />
                   {bridges.data?.map((item) => (
                     <tr key={item.bridge.id}>
                       <td>{item.bridge.name}</td>
@@ -487,7 +516,12 @@ export default function App() {
                           </div>
                         ) : (
                           <>
-                            <p>{item.reason}</p>
+                            <p>
+                              {valueText(
+                                item.reason,
+                                "No reviewer reason recorded",
+                              )}
+                            </p>
                             <p className="help">
                               Delivery: {item.delivery.replaceAll("_", " ")}
                             </p>
@@ -572,8 +606,8 @@ export default function App() {
                 </p>
                 <p>
                   Background stabilization uses ALIKED, LightGlue, MAGSAC and
-                  optical flow when configured. Handheld validation has been
-                  completed through the stabilization pipeline.
+                  optical flow when configured. The recorded stabilization
+                  evaluation uses generated camera shake.
                 </p>
                 <h2>Observed synthetic results</h2>
                 <table>
@@ -586,7 +620,14 @@ export default function App() {
                       <tr key={key}>
                         <th>{label}</th>
                         <td>
-                          {metric(evaluation.data?.synthetic, "summary." + key)}
+                          {evaluation.isPending
+                            ? "Loading…"
+                            : evaluation.isError
+                              ? "Connection unavailable"
+                              : metric(
+                                  evaluation.data?.synthetic,
+                                  "summary." + key,
+                                )}
                         </td>
                       </tr>
                     ))}
@@ -608,7 +649,14 @@ export default function App() {
                       <tr key={key}>
                         <th>{label}</th>
                         <td>
-                          {metric(evaluation.data?.agent, "summary." + key)}
+                          {evaluation.isPending
+                            ? "Loading…"
+                            : evaluation.isError
+                              ? "Connection unavailable"
+                              : metric(
+                                  evaluation.data?.agent,
+                                  "summary." + key,
+                                )}
                         </td>
                       </tr>
                     ))}
@@ -643,16 +691,25 @@ export default function App() {
                     not ground-truth accuracy.
                   </li>
                 </ul>
-                <h3>Additional evidence</h3>
+                <h3>Evidence sources</h3>
                 <p>
-                  Desk recordings with accelerometer ground truth, real handheld
-                  clips, AWS deployment and COOL benchmarks are available.
+                  Recorded synthetic evaluation and local benchmarks are shown
+                  here. The desk page identifies generated examples separately
+                  from physical trials.
                 </p>
                 <a href="#/desk">Set up the desk experiment</a>
                 <a href="/api/eval">Read evaluation JSON</a>
               </aside>
             </div>
-            <EvalDetails data={evaluation.data} />
+            {evaluation.isPending ? (
+              <p role="status">Loading evaluation evidence…</p>
+            ) : evaluation.isError ? (
+              <p role="alert">
+                Evaluation could not be loaded: {evaluation.error.message}
+              </p>
+            ) : (
+              <EvalDetails data={evaluation.data} />
+            )}
           </>
         ) : route === "bench" ? (
           <>
@@ -661,11 +718,21 @@ export default function App() {
               Measured operation and pipeline runs. Local measurements stay
               separate from COOL and cloud claims.
             </p>
-            <Bench data={benches.data} />
-            <BenchDetails data={benches.data} />
+            {benches.isPending ? (
+              <p role="status">Loading measured benchmarks…</p>
+            ) : benches.isError ? (
+              <p role="alert">
+                Benchmarks could not be loaded: {benches.error.message}
+              </p>
+            ) : (
+              <>
+                <Bench data={benches.data} />
+                <BenchDetails data={benches.data} />
+              </>
+            )}
             <p>
-              COOL Graviton and equal-vCPU cloud comparisons have been completed.
-              Cost and cloud capacity data is available in the benchmark results.
+              These results describe the recorded local runs. Cloud cost and
+              COOL comparisons require their own measured benchmark files.
             </p>
             <a href="/api/bench">Read benchmark JSON</a>
           </>
@@ -759,8 +826,11 @@ export default function App() {
                       </p>
                       <span className="label">
                         Interval{" "}
-                        {estimate.ci_hz?.map((v) => v.toFixed(3)).join(" – ")}{" "}
-                        Hz
+                        {estimate.ci_hz
+                          ? estimate.ci_hz
+                              .map((v) => numberText(v))
+                              .join(" to ") + " Hz"
+                          : "could not be estimated"}
                       </span>
                       {estimate.selected && (
                         <Spark
@@ -775,7 +845,10 @@ export default function App() {
                       <div>
                         <dt>Extraction method</dt>
                         <dd className="method">
-                          {estimate.selected?.method.replaceAll("_", " ")}
+                          {valueText(
+                            estimate.selected?.method.replaceAll("_", " "),
+                            "No extraction selected",
+                          )}
                         </dd>
                       </div>
                       <div>
@@ -793,7 +866,8 @@ export default function App() {
                       <div>
                         <dt>Temperature</dt>
                         <dd>
-                          {record?.capture.temperature_c ?? "Ambient"}
+                          {record?.capture.temperature_c ??
+                            "Temperature not recorded"}
                           {record?.capture.temperature_c != null && " °C"}
                         </dd>
                       </div>
@@ -984,7 +1058,7 @@ export default function App() {
                               item.series.roi_id &&
                             estimate.selected.method === item.series.method
                               ? "Selected"
-                              : "–"}
+                              : "Comparison region"}
                           </td>
                         </tr>
                       ))}
@@ -1065,6 +1139,17 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
+                    <EmptyRows
+                      count={history.data?.length ?? 0}
+                      columns={4}
+                      message={
+                        history.isPending
+                          ? "Loading capture history…"
+                          : history.isError
+                            ? "Capture history could not be loaded"
+                            : "No captures recorded for this bridge"
+                      }
+                    />
                     {history.data?.map((item) => (
                       <tr key={item.capture.id}>
                         <td>
@@ -1139,9 +1224,11 @@ function Bench({ data }: { data: Evidence | undefined }) {
   return local?.workloads ? (
     <>
       <p>
-        Local {local.provenance?.machine} runtime, OpenCV{" "}
-        {local.provenance?.cv2_version}. Timing intervals describe repeated runs
-        on this machine.
+        Local{" "}
+        {valueText(local.provenance?.machine, "architecture not recorded")}{" "}
+        runtime, OpenCV{" "}
+        {valueText(local.provenance?.cv2_version, "version not recorded")}.
+        Timing intervals describe repeated runs on this machine.
       </p>
       <div className="table-scroll" tabIndex={0}>
         <table>
@@ -1175,8 +1262,7 @@ function Bench({ data }: { data: Evidence | undefined }) {
 }
 
 type Row = Record<string, unknown>;
-const num = (value: unknown, digits = 3) =>
-  typeof value === "number" ? value.toFixed(digits) : "Not run";
+const num = numberText;
 const rows = (value: unknown, key: string): Row[] => {
   const list = (value as Row | undefined)?.[key];
   return Array.isArray(list) ? (list as Row[]) : [];
@@ -1225,17 +1311,40 @@ function EvalDetails({ data }: { data: Evidence | undefined }) {
               </tr>
             </thead>
             <tbody>
+              <EmptyRows
+                count={rows(failures, "scenarios").length}
+                columns={3}
+                message="No failure scenarios have been evaluated"
+              />
               {rows(failures, "scenarios").map((row) => (
                 <tr key={String(row.scenario)}>
-                  <th>{String(row.scenario).replaceAll("_", " ")}</th>
-                  <td>{String(row.outcome).replaceAll("_", " ")}</td>
-                  <td>{row.refused_as_expected ? "Yes" : "No"}</td>
+                  <th>
+                    {valueText(
+                      row.scenario,
+                      "Scenario not recorded",
+                    ).replaceAll("_", " ")}
+                  </th>
+                  <td>
+                    {valueText(row.outcome, "Outcome not recorded").replaceAll(
+                      "_",
+                      " ",
+                    )}
+                  </td>
+                  <td>
+                    {valueText(
+                      row.refused_as_expected,
+                      "Refusal result not recorded",
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <Limits items={notes(failures, "covered")} title="Validated scenarios" />
+        <Limits
+          items={notes(failures, "covered")}
+          title="Validated scenarios"
+        />
       </section>
       <section className="panel" aria-labelledby="quality-title">
         <h2 id="quality-title">Quality gates</h2>
@@ -1250,7 +1359,12 @@ function EvalDetails({ data }: { data: Evidence | undefined }) {
           </div>
           <div>
             <dt>All gates passed</dt>
-            <dd>{quality ? (quality.all_passed ? "Yes" : "No") : "Not run"}</dd>
+            <dd>
+              {valueText(
+                quality?.all_passed,
+                "Quality checks have not been run",
+              )}
+            </dd>
           </div>
         </dl>
         <h2>Synthetic camera shake</h2>
@@ -1266,7 +1380,10 @@ function EvalDetails({ data }: { data: Evidence | undefined }) {
           <div>
             <dt>Benefit observed</dt>
             <dd>
-              {shake ? (shake.benefit_observed ? "Yes" : "No") : "Not run"}
+              {valueText(
+                shake?.benefit_observed,
+                "Stabilization has not been evaluated",
+              )}
             </dd>
           </div>
         </dl>
@@ -1302,15 +1419,20 @@ function BenchDetails({ data }: { data: Evidence | undefined }) {
               </tr>
             </thead>
             <tbody>
+              <EmptyRows
+                count={rows(pool, "rows").length}
+                columns={4}
+                message="No parallel worker benchmark recorded"
+              />
               {rows(pool, "rows").map((row) => (
-                <tr key={String(row.workers)}>
-                  <th>{String(row.workers)}</th>
+                <tr key={valueText(row.workers, "Worker count not recorded")}>
+                  <th>{valueText(row.workers, "Worker count not recorded")}</th>
                   <td>{num(row.mean_seconds)}</td>
                   <td>{num(row.ci95_seconds)}</td>
                   <td>
                     {Array.isArray(row.repeats_seconds)
                       ? row.repeats_seconds.length
-                      : "Not run"}
+                      : "Repeats not recorded"}
                   </td>
                 </tr>
               ))}
@@ -1328,12 +1450,17 @@ function BenchDetails({ data }: { data: Evidence | undefined }) {
               </tr>
             </thead>
             <tbody>
+              <EmptyRows
+                count={rows(refresh, "rows").length}
+                columns={3}
+                message="No stabilization refresh benchmark recorded"
+              />
               {rows(refresh, "rows").map((row, i) => (
                 <tr key={i}>
                   <th>
                     {String(
                       (row.configuration as Row | undefined)?.refresh_frames ??
-                        "–",
+                        "Refresh setting not recorded",
                     )}
                   </th>
                   <td>{num(row.processing_fps)}</td>
@@ -1360,10 +1487,17 @@ function BenchDetails({ data }: { data: Evidence | undefined }) {
               </tr>
             </thead>
             <tbody>
+              <EmptyRows
+                count={hot.length}
+                columns={3}
+                message="No pipeline profile recorded"
+              />
               {hot.map((row) => (
-                <tr key={String(row.function)}>
-                  <th className="code">{String(row.function)}</th>
-                  <td>{String(row.calls)}</td>
+                <tr key={valueText(row.function, "Function not recorded")}>
+                  <th className="code">
+                    {valueText(row.function, "Function not recorded")}
+                  </th>
+                  <td>{valueText(row.calls, "Call count not recorded")}</td>
                   <td>{num(row.cumulative_seconds)}</td>
                 </tr>
               ))}
@@ -1377,5 +1511,21 @@ function BenchDetails({ data }: { data: Evidence | undefined }) {
         />
       </section>
     </div>
+  );
+}
+
+function EmptyRows({
+  count,
+  columns,
+  message,
+}: {
+  count: number;
+  columns: number;
+  message: string;
+}) {
+  return count ? null : (
+    <tr>
+      <td colSpan={columns}>{message}</td>
+    </tr>
   );
 }

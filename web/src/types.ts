@@ -119,6 +119,7 @@ export interface Health {
 }
 export interface DeskResult {
   kind: string;
+  synthetic?: boolean;
   captures: {
     capture_id: string;
     state: string;

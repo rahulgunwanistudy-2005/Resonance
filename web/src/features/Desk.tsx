@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { DeskResult } from "../types";
+import { numberText } from "../display";
 
 // eval/desk.py labels each trial by its filename prefix: healthy_1.mp4 -> "healthy".
 const STATES = [
@@ -35,10 +36,15 @@ const mean = (values: number[]) =>
 export function Desk({
   data,
   target,
+  loading = false,
+  error,
 }: {
   data: DeskResult | undefined;
   target: number | undefined;
+  loading?: boolean;
+  error?: string;
 }) {
+  const simulated = data?.synthetic === true;
   const [step, setStep] = useState<StateKey | "compare">("healthy");
   const groups = useMemo(() => {
     const rows = data?.captures ?? [];
@@ -66,7 +72,7 @@ export function Desk({
   const recorded = data?.captures.length ?? 0;
   const healthy = groups.healthy.video;
   const shift = (value: number | null) =>
-    value != null && healthy != null && value !== healthy
+    value != null && healthy != null && healthy > 0
       ? ((value - healthy) / healthy) * 100
       : null;
   const current =
@@ -94,10 +100,20 @@ export function Desk({
         </div>
         <span className="local-mode">
           {recorded
-            ? `${recorded} recorded trial${recorded === 1 ? "" : "s"}`
+            ? `${recorded} ${simulated ? "simulated examples" : `recorded trial${recorded === 1 ? "" : "s"}`}`
             : "Ready for recordings"}
         </span>
       </div>
+
+      {loading ? (
+        <p role="status">Loading desk experiment results…</p>
+      ) : error ? (
+        <p role="alert">Desk results could not be loaded: {error}</p>
+      ) : simulated ? (
+        <p className="notice" role="note">
+          Simulated example data · generated video and sensor signals.
+        </p>
+      ) : null}
 
       <div className="steps" role="group" aria-label="Experiment state">
         {STATES.map((s, i) => (
@@ -154,7 +170,7 @@ export function Desk({
                           (delta != null
                             ? ` · ${delta < 0 ? "−" : "+"}${Math.abs(delta).toFixed(1)}%`
                             : "")
-                        : "No data"}
+                        : "Record this state to measure its frequency"}
                     </span>
                   </div>
                 );
@@ -176,6 +192,7 @@ export function Desk({
               accelerometer={groups.healthy.accelerometer}
               trials={groups.healthy.trials.length}
               color="#3DE0D0"
+              simulated={simulated}
             />
           </section>
           <section className="panel" aria-labelledby="desk-after">
@@ -191,6 +208,7 @@ export function Desk({
                 trials={after!.trials.length}
                 color={current!.color}
                 shift={afterShift}
+                simulated={simulated}
               />
             )}
           </section>
@@ -209,11 +227,13 @@ export function Desk({
       <section className="panel desk-table" aria-labelledby="truth-title">
         <div className="section-title">
           <h2 id="truth-title" className="display small">
-            Video against the accelerometer
+            {simulated
+              ? "Video against the simulated sensor"
+              : "Video against the accelerometer"}
           </h2>
           <span className="mode-note">
             {recorded
-              ? "From eval/results/desk.json"
+              ? `From eval/results/${simulated ? "desk_example" : "desk"}.json${simulated ? " · simulated" : ""}`
               : "Rows fill in after the desk evaluator runs"}
           </span>
         </div>
@@ -223,7 +243,9 @@ export function Desk({
               <tr>
                 <th>State</th>
                 <th>Trial</th>
-                <th>Accelerometer (Hz)</th>
+                <th>
+                  {simulated ? "Simulated sensor (Hz)" : "Accelerometer (Hz)"}
+                </th>
                 <th>Video (Hz)</th>
                 <th>Error</th>
                 <th>Shift vs healthy</th>
@@ -232,8 +254,25 @@ export function Desk({
             <tbody>
               {recorded
                 ? [...STATES.map((s) => s.key), ...groups.extra].flatMap(
-                    (key) =>
-                      groups.of(key).trials.map((row) => {
+                    (key) => {
+                      if (!groups.of(key).trials.length)
+                        return [
+                          <tr key={key}>
+                            <th>
+                              {STATES.find((s) => s.key === key)?.label ?? key}
+                            </th>
+                            <td>No trial recorded</td>
+                            <td>Sensor recording required</td>
+                            <td>Video recording required</td>
+                            <td>Paired readings required</td>
+                            <td>
+                              {key === "healthy"
+                                ? "Reference state"
+                                : "Paired healthy comparison required"}
+                            </td>
+                          </tr>,
+                        ];
+                      return groups.of(key).trials.map((row) => {
                         const delta = shift(row.video_hz);
                         return (
                           <tr key={row.capture_id}>
@@ -241,7 +280,13 @@ export function Desk({
                               {STATES.find((s) => s.key === key)?.label ?? key}
                             </th>
                             <td>{row.capture_id}</td>
-                            <td>{row.accelerometer_hz.toFixed(3)}</td>
+                            <td>
+                              {numberText(
+                                row.accelerometer_hz,
+                                3,
+                                "Sensor recording required",
+                              )}
+                            </td>
                             <td>
                               {row.video_hz != null
                                 ? row.video_hz.toFixed(3)
@@ -250,18 +295,19 @@ export function Desk({
                             <td>
                               {row.frequency_error_percent != null
                                 ? row.frequency_error_percent.toFixed(2) + "%"
-                                : "–"}
+                                : "No valid video comparison"}
                             </td>
                             <td>
                               {key === "healthy"
                                 ? "Reference"
                                 : delta != null
                                   ? `${delta < 0 ? "−" : "+"}${Math.abs(delta).toFixed(1)}%`
-                                  : "–"}
+                                  : "Healthy and changed readings required"}
                             </td>
                           </tr>
                         );
-                      }),
+                      });
+                    },
                   )
                 : STATES.map((s) => (
                     <tr key={s.key}>
@@ -269,12 +315,14 @@ export function Desk({
                         {s.label}
                         <div className="sub">{s.how}</div>
                       </th>
-                      <td className="muted">No data</td>
-                      <td className="muted">–</td>
-                      <td className="muted">–</td>
-                      <td className="muted">–</td>
+                      <td className="muted">No trial recorded</td>
+                      <td className="muted">Sensor recording required</td>
+                      <td className="muted">Video recording required</td>
+                      <td className="muted">Paired readings required</td>
                       <td className="muted">
-                        {s.key === "healthy" ? "Reference" : "–"}
+                        {s.key === "healthy"
+                          ? "Reference state"
+                          : "Paired healthy comparison required"}
                       </td>
                     </tr>
                   ))}
@@ -355,18 +403,27 @@ function Reading({
   trials,
   color,
   shift,
+  simulated = false,
 }: {
   video: number | null;
   accelerometer: number | null;
   trials: number;
   color: string;
   shift?: number | null;
+  simulated?: boolean;
 }) {
-  if (!trials) return <p className="placeholder">No trials recorded for this state.</p>;
+  if (!trials)
+    return <p className="placeholder">No trials recorded for this state.</p>;
   return (
     <>
       <p className="reading" style={{ color }}>
-        {video != null ? video.toFixed(3) : "No reading"} <small>Hz</small>
+        {video != null ? (
+          <>
+            {numberText(video)} <small>Hz</small>
+          </>
+        ) : (
+          "Video measurement unavailable"
+        )}
         {shift != null && (
           <span className="delta">
             {shift < 0 ? "▼" : "▲"} {Math.abs(shift).toFixed(1)}% vs healthy
@@ -374,8 +431,11 @@ function Reading({
         )}
       </p>
       <p className="reading-label">
-        Video mean of {trials} trial{trials === 1 ? "" : "s"} · accelerometer{" "}
-        {accelerometer != null ? accelerometer.toFixed(3) : "–"} Hz
+        Video mean of {trials} trial{trials === 1 ? "" : "s"} ·{" "}
+        {simulated ? "simulated sensor" : "accelerometer"}{" "}
+        {accelerometer != null
+          ? numberText(accelerometer) + " Hz"
+          : "sensor recording required"}
       </p>
     </>
   );

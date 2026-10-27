@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { numberText } from "../display";
 import uPlot from "uplot";
 export function Chart({
   title,
@@ -88,7 +89,7 @@ export function Chart({
               {x.map((value, index) => (
                 <tr key={index}>
                   <td>{value.toFixed(3)}</td>
-                  <td>{y[index]?.toPrecision(5)}</td>
+                  <td>{numberText(y[index], 5, "Sample not recorded")}</td>
                 </tr>
               ))}
             </tbody>

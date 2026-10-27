@@ -1,8 +1,5 @@
 import type { Trace } from "../types";
-const show = (value: string | number | boolean | null) =>
-  typeof value === "number"
-    ? value.toLocaleString(undefined, { maximumFractionDigits: 4 })
-    : String(value);
+import { valueText } from "../display";
 export function Timeline({ events }: { events: Trace[] }) {
   return (
     <ol className="timeline">
@@ -28,7 +25,7 @@ export function Timeline({ events }: { events: Trace[] }) {
                   {evidence.map(([key, value]) => (
                     <div key={key}>
                       <dt>{key.replaceAll("_", " ")}</dt>
-                      <dd>{show(value)}</dd>
+                      <dd>{valueText(value)}</dd>
                     </div>
                   ))}
                 </dl>

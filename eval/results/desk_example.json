@@ -1,0 +1,108 @@
+{
+  "kind": "simulated_desk_example",
+  "synthetic": true,
+  "git_revision": "8dd2b3da57e201a1eb8532976eb69f4aa1858e43",
+  "captures": [
+    {
+      "capture_id": "simulated_healthy_1",
+      "state": "healthy",
+      "accelerometer_hz": 7.103035126507523,
+      "accelerometer_sample_rate": 240.0,
+      "video_hz": 7.103343929738582,
+      "frequency_error_percent": 0.004347482809241576,
+      "outcome": "measured",
+      "reasons": [
+        "Generated example; no physical sensor recording"
+      ],
+      "configuration": {
+        "seed": 42,
+        "roi_size": 128,
+        "fps": 60,
+        "duration_seconds": 8,
+        "frequency_hz": 7.1,
+        "amplitude_rms_px": 0.5,
+        "noise_std": 0.5,
+        "camera_shake_rms_px": 0
+      },
+      "video_sha256": "d5162df8ef317307564475a903713797fc14ca291580f857abd571d904f32cd3",
+      "accelerometer_sha256": "0a845e3fcbf1e1e786a9246bcdd87aeee839f9c80e12c3138f9a6dc2ceb1f287"
+    },
+    {
+      "capture_id": "simulated_loosened_1",
+      "state": "loosened",
+      "accelerometer_hz": 6.803467554989817,
+      "accelerometer_sample_rate": 240.0,
+      "video_hz": 6.802995198971172,
+      "frequency_error_percent": 0.006942871628723424,
+      "outcome": "measured",
+      "reasons": [
+        "Generated example; no physical sensor recording"
+      ],
+      "configuration": {
+        "seed": 42,
+        "roi_size": 128,
+        "fps": 60,
+        "duration_seconds": 8,
+        "frequency_hz": 6.8,
+        "amplitude_rms_px": 0.5,
+        "noise_std": 0.5,
+        "camera_shake_rms_px": 0
+      },
+      "video_sha256": "2c20b3b21f9f63d9b9eed8105811cc52bd2ef5293b95d3077f631ff9e66fd458",
+      "accelerometer_sha256": "3884a0d113d990b24def901a464e83ef01990815c23652b018e7e224eae941f2"
+    },
+    {
+      "capture_id": "simulated_mass_1",
+      "state": "mass",
+      "accelerometer_hz": 6.500000013910138,
+      "accelerometer_sample_rate": 240.0,
+      "video_hz": 6.49968691036017,
+      "frequency_error_percent": 0.004816977681509904,
+      "outcome": "measured",
+      "reasons": [
+        "Generated example; no physical sensor recording"
+      ],
+      "configuration": {
+        "seed": 42,
+        "roi_size": 128,
+        "fps": 60,
+        "duration_seconds": 8,
+        "frequency_hz": 6.5,
+        "amplitude_rms_px": 0.5,
+        "noise_std": 0.5,
+        "camera_shake_rms_px": 0
+      },
+      "video_sha256": "2e6e0fea7745184e750d3efbd4d3b7d2df6d8eb00b7f2b45ffffd2f612c40e05",
+      "accelerometer_sha256": "3616aa1ed3ef2d2dfcb63a2915241fdc1a00805750f1684bb41366b3ecd48662"
+    },
+    {
+      "capture_id": "simulated_cut_1",
+      "state": "cut",
+      "accelerometer_hz": 6.103035156279411,
+      "accelerometer_sample_rate": 240.0,
+      "video_hz": 6.102959748442157,
+      "frequency_error_percent": 0.0012355792703533375,
+      "outcome": "measured",
+      "reasons": [
+        "Generated example; no physical sensor recording"
+      ],
+      "configuration": {
+        "seed": 42,
+        "roi_size": 128,
+        "fps": 60,
+        "duration_seconds": 8,
+        "frequency_hz": 6.1,
+        "amplitude_rms_px": 0.5,
+        "noise_std": 0.5,
+        "camera_shake_rms_px": 0
+      },
+      "video_sha256": "3641eee1cc3467966191673cf275ceda1372a297bc0109565a4139124c9f8b4c",
+      "accelerometer_sha256": "29c89398fad855b385324c2ecc0e1da81919860f64ad4ee15147ec210335851f"
+    }
+  ],
+  "limitations": [
+    "Generated video textures and analytical sensor signals, not real desk trials",
+    "State frequencies illustrate changes; they do not predict a physical rig",
+    "No desk ground-truth or structural safety validation is claimed"
+  ]
+}

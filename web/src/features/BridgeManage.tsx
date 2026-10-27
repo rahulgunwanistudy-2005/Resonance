@@ -37,7 +37,7 @@ export function CurrentBaseline({ bridgeId }: { bridgeId: string }) {
           <div>
             <dt>Valid temperatures</dt>
             <dd>
-              {value.temperature_min_c.toFixed(1)} –{" "}
+              {value.temperature_min_c.toFixed(1)} to{" "}
               {value.temperature_max_c.toFixed(1)} °C
             </dd>
           </div>

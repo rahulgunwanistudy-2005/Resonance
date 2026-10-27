@@ -123,7 +123,7 @@ export function BaselineForm({
           <div>
             <dt>Valid temperature range</dt>
             <dd>
-              {saved.temperature_min_c.toFixed(1)} –{" "}
+              {saved.temperature_min_c.toFixed(1)} to{" "}
               {saved.temperature_max_c.toFixed(1)} °C
             </dd>
           </div>
